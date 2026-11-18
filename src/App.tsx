@@ -84,38 +84,49 @@ function App() {
   const announcement = `Showing ${root} ${typeLabel} ${mode}, ${TUNING_PRESETS.find((p) => p.value === tuningPreset)?.label} tuning.`;
 
   return (
-    <main>
-      <h1>Fretboard</h1>
-      <p className="visually-hidden" aria-live="polite">
-        {announcement}
-      </p>
-      <Controls
-        root={root}
-        onRootChange={setRoot}
-        mode={mode}
-        onModeChange={handleModeChange}
-        type={type}
-        onTypeChange={setType}
-        tuningPreset={tuningPreset}
-        onTuningPresetChange={handleTuningPresetChange}
-        customTuning={customTuning}
-        onCustomStringChange={handleCustomStringChange}
-        labelMode={labelMode}
-        onLabelModeChange={setLabelMode}
-        leftHanded={leftHanded}
-        onLeftHandedChange={setLeftHanded}
-      />
-      <div className="fretboard-scroll">
-        <Fretboard
-          tuning={tuning}
-          numFrets={15}
-          rootNote={root}
-          highlightedNotes={notes}
+    <>
+      <main>
+        <h1>Fretboard</h1>
+        <p className="visually-hidden" aria-live="polite">
+          {announcement}
+        </p>
+        <Controls
+          root={root}
+          onRootChange={setRoot}
+          mode={mode}
+          onModeChange={handleModeChange}
+          type={type}
+          onTypeChange={setType}
+          tuningPreset={tuningPreset}
+          onTuningPresetChange={handleTuningPresetChange}
+          customTuning={customTuning}
+          onCustomStringChange={handleCustomStringChange}
           labelMode={labelMode}
+          onLabelModeChange={setLabelMode}
           leftHanded={leftHanded}
+          onLeftHandedChange={setLeftHanded}
         />
-      </div>
-    </main>
+        <div className="fretboard-scroll">
+          <Fretboard
+            tuning={tuning}
+            numFrets={15}
+            rootNote={root}
+            highlightedNotes={notes}
+            labelMode={labelMode}
+            leftHanded={leftHanded}
+          />
+        </div>
+      </main>
+      <footer>
+        <a
+          href="https://github.com/scf1001/fretboard-app"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View source on GitHub
+        </a>
+      </footer>
+    </>
   );
 }
 
