@@ -25,7 +25,7 @@ function NoteMarker({ x, y, label, isRoot }: NoteMarkerProps) {
           cx={x}
           cy={y}
           r={size}
-          fill="var(--accent-bg)"
+          fill="var(--marker-bg)"
           stroke="var(--accent)"
           strokeWidth={1.5}
         />
@@ -36,7 +36,7 @@ function NoteMarker({ x, y, label, isRoot }: NoteMarkerProps) {
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={10}
-        fill={isRoot ? "white" : "var(--text-h)"}
+        fill="white"
       >
         {label}
       </text>
