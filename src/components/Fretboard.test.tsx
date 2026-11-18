@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import Fretboard from "./Fretboard";
 import { STANDARD_TUNING } from "../lib/theory";
 
@@ -67,6 +67,36 @@ describe("Fretboard", () => {
     expect(container.querySelectorAll("circle")).toHaveLength(2);
     // No other note letters should appear.
     expect(container.querySelectorAll("text")).toHaveLength(5);
+  });
+
+  it("calls onNoteClick with the exact pitch, including octave, when a marker is clicked", () => {
+    const onNoteClick = vi.fn();
+    const { container } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+        onNoteClick={onNoteClick}
+      />,
+    );
+    // The first marker in document order is string 0 (low E), fret 0.
+    const firstMarker = container.querySelector("g")!;
+    fireEvent.click(firstMarker);
+    expect(onNoteClick).toHaveBeenCalledWith("E2");
+  });
+
+  it("is not clickable when no onNoteClick handler is given", () => {
+    const { container } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+      />,
+    );
+    const firstMarker = container.querySelector("g")!;
+    expect(() => fireEvent.click(firstMarker)).not.toThrow();
   });
 
   it("gives each marker a tooltip with both its note name and interval", () => {

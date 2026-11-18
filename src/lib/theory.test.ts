@@ -7,6 +7,7 @@ import {
   findMatchingNote,
   intervalFromRoot,
   noteAt,
+  pitchAt,
   sameNote,
   scaleNotes,
   SCALE_TYPES,
@@ -40,6 +41,18 @@ describe("noteAt", () => {
   it("supports DADGAD tuning", () => {
     expect(noteAt(0, 0, DADGAD_TUNING)).toBe("D");
     expect(noteAt(4, 0, DADGAD_TUNING)).toBe("A");
+  });
+});
+
+describe("pitchAt", () => {
+  it("returns the open string's exact pitch at fret 0", () => {
+    expect(pitchAt(0, 0, STANDARD_TUNING)).toBe("E2");
+    expect(pitchAt(5, 0, STANDARD_TUNING)).toBe("E4");
+  });
+
+  it("crosses into the next octave past fret 12", () => {
+    expect(pitchAt(0, 12, STANDARD_TUNING)).toBe("E3");
+    expect(pitchAt(0, 13, STANDARD_TUNING)).toBe("F3");
   });
 });
 

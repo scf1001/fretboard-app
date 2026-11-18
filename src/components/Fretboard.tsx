@@ -2,6 +2,7 @@ import {
   findMatchingNote,
   intervalFromRoot,
   noteAt,
+  pitchAt,
   sameNote,
   type LabelMode,
   type Tuning,
@@ -28,6 +29,7 @@ type FretboardProps = {
   highlightedNotes?: string[];
   labelMode?: LabelMode;
   leftHanded?: boolean;
+  onNoteClick?: (pitch: string) => void;
 };
 
 function fretCenterX(fret: number): number {
@@ -61,6 +63,7 @@ function Fretboard({
   highlightedNotes = [],
   labelMode = "name",
   leftHanded = false,
+  onNoteClick,
 }: FretboardProps) {
   const numStrings = tuning.length;
   const fretboardTop = MARGIN_TOP;
@@ -144,6 +147,11 @@ function Fretboard({
                 label={label}
                 isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
                 tooltip={interval ? `${matched} (${interval})` : matched}
+                onClick={
+                  onNoteClick
+                    ? () => onNoteClick(pitchAt(stringIndex, fret, tuning))
+                    : undefined
+                }
               />,
             ];
           },

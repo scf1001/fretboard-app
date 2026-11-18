@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Controls from "./components/Controls";
 import Fretboard from "./components/Fretboard";
+import { playNote } from "./lib/audio";
 import {
   chordNotes,
   CHORD_TYPES,
@@ -114,6 +115,7 @@ function App() {
             highlightedNotes={notes}
             labelMode={labelMode}
             leftHanded={leftHanded}
+            onNoteClick={playNote}
           />
         </div>
       </main>

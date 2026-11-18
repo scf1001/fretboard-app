@@ -86,15 +86,23 @@ export const CHORD_TYPES = [
   { value: "sus4", label: "Suspended 4th" },
 ];
 
+/** The exact pitch at a fretted position, including octave (e.g. "A4") — the open string's note, up `fret` semitones. */
+export function pitchAt(
+  stringIndex: number,
+  fret: number,
+  tuning: Tuning,
+): string {
+  const openNote = tuning[stringIndex];
+  return Note.transpose(openNote, Interval.fromSemitones(fret));
+}
+
 /** The note at a fretted position: the open string's note, up `fret` semitones, as a pitch class. */
 export function noteAt(
   stringIndex: number,
   fret: number,
   tuning: Tuning,
 ): string {
-  const openNote = tuning[stringIndex];
-  const note = Note.transpose(openNote, Interval.fromSemitones(fret));
-  return Note.get(note).pc;
+  return Note.get(pitchAt(stringIndex, fret, tuning)).pc;
 }
 
 /** The pitch classes in a scale, e.g. scaleNotes("C", "major") => ["C", "D", "E", "F", "G", "A", "B"]. */
