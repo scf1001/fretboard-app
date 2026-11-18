@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CHORD_TYPES,
   chordNotes,
   DADGAD_TUNING,
   DROP_D_TUNING,
@@ -7,6 +8,7 @@ import {
   noteAt,
   sameNote,
   scaleNotes,
+  SCALE_TYPES,
   STANDARD_TUNING,
 } from "./theory";
 
@@ -110,5 +112,17 @@ describe("findMatchingNote", () => {
 
   it("returns undefined when there is no match", () => {
     expect(findMatchingNote("C", ["D", "E"])).toBeUndefined();
+  });
+});
+
+describe("SCALE_TYPES", () => {
+  it.each(SCALE_TYPES)("$label resolves to notes", ({ value }) => {
+    expect(scaleNotes("C", value).length).toBeGreaterThan(0);
+  });
+});
+
+describe("CHORD_TYPES", () => {
+  it.each(CHORD_TYPES)("$label resolves to notes", ({ value }) => {
+    expect(chordNotes("C", value).length).toBeGreaterThan(0);
   });
 });

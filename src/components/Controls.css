@@ -1,0 +1,32 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.controls fieldset {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.controls fieldset label {
+  flex-direction: row;
+  align-items: center;
+}
+
+.controls select {
+  font: inherit;
+  padding: 4px 8px;
+}

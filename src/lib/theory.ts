@@ -7,6 +7,48 @@ export const STANDARD_TUNING: Tuning = ["E2", "A2", "D3", "G3", "B3", "E4"];
 export const DROP_D_TUNING: Tuning = ["D2", "A2", "D3", "G3", "B3", "E4"];
 export const DADGAD_TUNING: Tuning = ["D2", "A2", "D3", "G3", "A3", "D4"];
 
+export const ROOTS = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+];
+
+export type Mode = "scale" | "chord";
+
+/** A curated set of scale types, good enough for v1 without listing every scale Tonal knows. */
+export const SCALE_TYPES = [
+  { value: "major", label: "Major" },
+  { value: "minor", label: "Minor" },
+  { value: "major pentatonic", label: "Major pentatonic" },
+  { value: "minor pentatonic", label: "Minor pentatonic" },
+  { value: "blues", label: "Blues" },
+  { value: "dorian", label: "Dorian" },
+  { value: "mixolydian", label: "Mixolydian" },
+  { value: "harmonic minor", label: "Harmonic minor" },
+];
+
+/** A curated set of chord types, good enough for v1 without listing every chord Tonal knows. */
+export const CHORD_TYPES = [
+  { value: "major", label: "Major" },
+  { value: "minor", label: "Minor" },
+  { value: "7", label: "Dominant 7th" },
+  { value: "maj7", label: "Major 7th" },
+  { value: "min7", label: "Minor 7th" },
+  { value: "dim", label: "Diminished" },
+  { value: "aug", label: "Augmented" },
+  { value: "sus2", label: "Suspended 2nd" },
+  { value: "sus4", label: "Suspended 4th" },
+];
+
 /** The note at a fretted position: the open string's note, up `fret` semitones, as a pitch class. */
 export function noteAt(
   stringIndex: number,
