@@ -76,4 +76,23 @@ describe("Fretboard", () => {
     expect(queryAllByText("E")).toHaveLength(0);
     expect(queryAllByText("A")).toHaveLength(0);
   });
+
+  it("mirrors the nut towards the right edge in left-handed mode", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} leftHanded />,
+    );
+    const svg = container.querySelector("svg")!;
+    const nut = container.querySelector("line")!;
+    const width = Number(svg.getAttribute("width"));
+    // The nut, normally at x=40, mirrors to width - 40.
+    expect(nut.getAttribute("x1")).toBe(String(width - 40));
+  });
+
+  it("keeps the nut on the left when not left-handed", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
+    );
+    const nut = container.querySelector("line")!;
+    expect(nut.getAttribute("x1")).toBe("40");
+  });
 });

@@ -31,6 +31,12 @@
   padding: 4px 8px;
 }
 
+.controls .checkbox-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
 .controls .custom-tuning {
   flex-direction: row;
   gap: 8px;

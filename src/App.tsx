@@ -22,6 +22,7 @@ function App() {
   const [tuningPreset, setTuningPreset] = useState<TuningPreset>("standard");
   const [customTuning, setCustomTuning] = useState<Tuning>(STANDARD_TUNING);
   const [labelMode, setLabelMode] = useState<LabelMode>("name");
+  const [leftHanded, setLeftHanded] = useState(false);
 
   function handleModeChange(newMode: Mode) {
     setMode(newMode);
@@ -65,6 +66,8 @@ function App() {
         onCustomStringChange={handleCustomStringChange}
         labelMode={labelMode}
         onLabelModeChange={setLabelMode}
+        leftHanded={leftHanded}
+        onLeftHandedChange={setLeftHanded}
       />
       <Fretboard
         tuning={tuning}
@@ -72,6 +75,7 @@ function App() {
         rootNote={root}
         highlightedNotes={notes}
         labelMode={labelMode}
+        leftHanded={leftHanded}
       />
     </main>
   );

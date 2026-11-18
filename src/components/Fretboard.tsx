@@ -27,6 +27,7 @@ type FretboardProps = {
   rootNote?: string;
   highlightedNotes?: string[];
   labelMode?: LabelMode;
+  leftHanded?: boolean;
 };
 
 function fretCenterX(fret: number): number {
@@ -45,6 +46,7 @@ function Fretboard({
   rootNote,
   highlightedNotes = [],
   labelMode = "name",
+  leftHanded = false,
 }: FretboardProps) {
   const numStrings = tuning.length;
   const fretboardTop = MARGIN_TOP;
@@ -53,6 +55,10 @@ function Fretboard({
 
   const width = fretboardRight + MARGIN_LEFT;
   const height = fretboardBottom + MARGIN_BOTTOM;
+
+  // For left-handed mode, mirror x positions (the nut ends up on the right).
+  // Labels stay upright since only positions are flipped, not the glyphs.
+  const toX = (x: number) => (leftHanded ? width - x : x);
 
   return (
     <svg
@@ -63,8 +69,8 @@ function Fretboard({
       height={height}
     >
       <line
-        x1={MARGIN_LEFT}
-        x2={MARGIN_LEFT}
+        x1={toX(MARGIN_LEFT)}
+        x2={toX(MARGIN_LEFT)}
         y1={fretboardTop}
         y2={fretboardBottom}
         stroke="currentColor"
@@ -76,8 +82,8 @@ function Fretboard({
           <String
             key={openNote + stringIndex}
             y={stringY(stringIndex, numStrings)}
-            x1={MARGIN_LEFT}
-            x2={fretboardRight}
+            x1={toX(MARGIN_LEFT)}
+            x2={toX(fretboardRight)}
             thickness={thickness}
           />
         );
@@ -93,8 +99,8 @@ function Fretboard({
           <Fret
             key={fretNumber}
             number={fretNumber}
-            wireX={wireX}
-            centerX={fretCenterX(fretNumber)}
+            wireX={toX(wireX)}
+            centerX={toX(fretCenterX(fretNumber))}
             top={fretboardTop}
             bottom={fretboardBottom}
             markerDots={markerDots}
@@ -117,7 +123,7 @@ function Fretboard({
             return [
               <NoteMarker
                 key={`${stringIndex}-${fret}`}
-                x={fretCenterX(fret)}
+                x={toX(fretCenterX(fret))}
                 y={stringY(stringIndex, numStrings)}
                 label={label}
                 isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
