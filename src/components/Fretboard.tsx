@@ -7,6 +7,7 @@ import {
   type LabelMode,
   type Tuning,
 } from "../lib/theory";
+import { nextPatternCandidates, type PatternStep } from "../lib/pattern";
 import Fret from "./Fret";
 import NoteMarker from "./NoteMarker";
 import String from "./String";
@@ -30,6 +31,10 @@ type FretboardProps = {
   labelMode?: LabelMode;
   leftHanded?: boolean;
   onNoteClick?: (pitch: string) => void;
+  /** While building a pattern: the notes placed so far. `null` means the builder is off. */
+  patternPath?: PatternStep[] | null;
+  onPatternStepAdd?: (step: PatternStep) => void;
+  onPatternStepRemoveFrom?: (step: PatternStep) => void;
 };
 
 function fretCenterX(fret: number): number {
@@ -55,6 +60,40 @@ function describeHighlights(
   return ` Highlighting: ${parts.join(", ")}.`;
 }
 
+type MarkerSpec = PatternStep & { isCandidate: boolean };
+
+/** Which positions to render as markers: every highlighted note normally, or the
+ * pattern-in-progress (placed notes plus the next clickable candidates) when building. */
+function markersToRender(
+  tuning: Tuning,
+  numFrets: number,
+  highlightedNotes: string[],
+  patternPath: PatternStep[] | null | undefined,
+): MarkerSpec[] {
+  if (!patternPath) {
+    const markers: MarkerSpec[] = [];
+    for (let stringIndex = 0; stringIndex < tuning.length; stringIndex++) {
+      for (let fret = 0; fret <= numFrets; fret++) {
+        if (
+          findMatchingNote(noteAt(stringIndex, fret, tuning), highlightedNotes)
+        ) {
+          markers.push({ stringIndex, fret, isCandidate: false });
+        }
+      }
+    }
+    return markers;
+  }
+
+  const placed = patternPath.map((step) => ({ ...step, isCandidate: false }));
+  const candidates = nextPatternCandidates(
+    patternPath,
+    tuning,
+    numFrets,
+    highlightedNotes,
+  ).map((step) => ({ ...step, isCandidate: true }));
+  return [...placed, ...candidates];
+}
+
 /** A static SVG fretboard: its strings, frets, fret position markers, and any highlighted notes. */
 function Fretboard({
   tuning,
@@ -64,6 +103,9 @@ function Fretboard({
   labelMode = "name",
   leftHanded = false,
   onNoteClick,
+  patternPath = null,
+  onPatternStepAdd,
+  onPatternStepRemoveFrom,
 }: FretboardProps) {
   const numStrings = tuning.length;
   const fretboardTop = MARGIN_TOP;
@@ -125,37 +167,42 @@ function Fretboard({
           />
         );
       })}
-      {tuning.flatMap((_, stringIndex) =>
-        Array.from({ length: numFrets + 1 }, (_, fret) => fret).flatMap(
-          (fret) => {
-            const matched = findMatchingNote(
-              noteAt(stringIndex, fret, tuning),
-              highlightedNotes,
-            );
-            if (!matched) return [];
-            const interval =
-              rootNote !== undefined
-                ? intervalFromRoot(rootNote, matched)
-                : undefined;
-            const label =
-              labelMode === "interval" && interval ? interval : matched;
-            return [
-              <NoteMarker
-                key={`${stringIndex}-${fret}`}
-                x={toX(fretCenterX(fret))}
-                y={stringY(stringIndex, numStrings)}
-                label={label}
-                isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
-                tooltip={interval ? `${matched} (${interval})` : matched}
-                onClick={
-                  onNoteClick
-                    ? () => onNoteClick(pitchAt(stringIndex, fret, tuning))
-                    : undefined
+      {markersToRender(tuning, numFrets, highlightedNotes, patternPath).map(
+        ({ stringIndex, fret, isCandidate }) => {
+          const matched = findMatchingNote(
+            noteAt(stringIndex, fret, tuning),
+            highlightedNotes,
+          );
+          if (!matched) return null;
+          const interval =
+            rootNote !== undefined
+              ? intervalFromRoot(rootNote, matched)
+              : undefined;
+          const label =
+            labelMode === "interval" && interval ? interval : matched;
+          return (
+            <NoteMarker
+              key={`${stringIndex}-${fret}`}
+              x={toX(fretCenterX(fret))}
+              y={stringY(stringIndex, numStrings)}
+              label={label}
+              isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
+              tooltip={interval ? `${matched} (${interval})` : matched}
+              isCandidate={isCandidate}
+              onClick={() => {
+                if (patternPath) {
+                  if (isCandidate) {
+                    onPatternStepAdd?.({ stringIndex, fret });
+                  } else {
+                    onPatternStepRemoveFrom?.({ stringIndex, fret });
+                  }
+                } else {
+                  onNoteClick?.(pitchAt(stringIndex, fret, tuning));
                 }
-              />,
-            ];
-          },
-        ),
+              }}
+            />
+          );
+        },
       )}
     </svg>
   );

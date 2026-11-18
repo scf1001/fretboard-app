@@ -11,6 +11,33 @@ main {
   overflow-x: auto;
 }
 
+.pattern-builder-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.pattern-builder-bar button {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 14px;
+  color: white;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pattern-builder-bar button:hover {
+  background: var(--root-marker);
+}
+
+.pattern-builder-hint {
+  font-size: 13px;
+  color: var(--text);
+}
+
 footer {
   padding: 20px;
   text-align: center;

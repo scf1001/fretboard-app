@@ -157,4 +157,86 @@ describe("Fretboard", () => {
     const nut = container.querySelector("line")!;
     expect(nut.getAttribute("x1")).toBe("40");
   });
+
+  describe("pattern builder", () => {
+    // For this fixture, E and A fall at (0,0) (1,0) (2,2) (3,2) (5,0) — 5 positions.
+    it("shows every highlighted note as a candidate when the path is empty", () => {
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={2}
+          rootNote="E"
+          highlightedNotes={["E", "A"]}
+          patternPath={[]}
+        />,
+      );
+      expect(container.querySelectorAll("g")).toHaveLength(5);
+      expect(container.querySelectorAll("[stroke-dasharray]")).toHaveLength(5);
+    });
+
+    it("narrows to the placed note plus its candidates once the path has a start", () => {
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={2}
+          rootNote="E"
+          highlightedNotes={["E", "A"]}
+          patternPath={[{ stringIndex: 0, fret: 0 }]}
+        />,
+      );
+      // Placed: (0,0). Candidate: (1,0) — the only scale tone within reach.
+      expect(container.querySelectorAll("g")).toHaveLength(2);
+      expect(container.querySelectorAll("[stroke-dasharray]")).toHaveLength(1);
+    });
+
+    it("calls onPatternStepAdd with the clicked candidate's position, and does not play a sound", () => {
+      const onPatternStepAdd = vi.fn();
+      const onNoteClick = vi.fn();
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={2}
+          rootNote="E"
+          highlightedNotes={["E", "A"]}
+          patternPath={[{ stringIndex: 0, fret: 0 }]}
+          onPatternStepAdd={onPatternStepAdd}
+          onNoteClick={onNoteClick}
+        />,
+      );
+      const candidate = container
+        .querySelector("[stroke-dasharray]")!
+        .closest("g")!;
+      fireEvent.click(candidate);
+      expect(onPatternStepAdd).toHaveBeenCalledWith({
+        stringIndex: 1,
+        fret: 0,
+      });
+      expect(onNoteClick).not.toHaveBeenCalled();
+    });
+
+    it("calls onPatternStepRemoveFrom with a placed note's position when it's clicked, and does not play a sound", () => {
+      const onPatternStepRemoveFrom = vi.fn();
+      const onNoteClick = vi.fn();
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={2}
+          rootNote="E"
+          highlightedNotes={["E", "A"]}
+          patternPath={[{ stringIndex: 0, fret: 0 }]}
+          onPatternStepRemoveFrom={onPatternStepRemoveFrom}
+          onNoteClick={onNoteClick}
+        />,
+      );
+      const placed = Array.from(container.querySelectorAll("g")).find(
+        (g) => !g.querySelector("[stroke-dasharray]"),
+      )!;
+      fireEvent.click(placed);
+      expect(onPatternStepRemoveFrom).toHaveBeenCalledWith({
+        stringIndex: 0,
+        fret: 0,
+      });
+      expect(onNoteClick).not.toHaveBeenCalled();
+    });
+  });
 });

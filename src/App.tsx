@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Controls from "./components/Controls";
 import Fretboard from "./components/Fretboard";
 import { playNote } from "./lib/audio";
+import { type PatternStep } from "./lib/pattern";
 import {
   chordNotes,
   CHORD_TYPES,
@@ -35,6 +36,7 @@ function App() {
     initial.labelMode ?? "name",
   );
   const [leftHanded, setLeftHanded] = useState(initial.leftHanded ?? false);
+  const [patternPath, setPatternPath] = useState<PatternStep[] | null>(null);
 
   useEffect(() => {
     const params = stateToSearchParams({
@@ -53,27 +55,57 @@ function App() {
     );
   }, [root, mode, type, tuningPreset, customTuning, labelMode, leftHanded]);
 
-  function handleModeChange(newMode: Mode) {
-    setMode(newMode);
-    setType(newMode === "scale" ? SCALE_TYPES[0].value : CHORD_TYPES[0].value);
-  }
-
   const tuning =
     tuningPreset === "custom"
       ? customTuning
       : TUNING_PRESETS.find((preset) => preset.value === tuningPreset)!.tuning!;
+
+  // The pattern path's positions are only meaningful for the scale/chord/tuning they
+  // were built against — changing any of those invalidates it, so each handler below
+  // that changes root, mode, type, or tuning also clears the in-progress pattern.
+  function handleRootChange(newRoot: string) {
+    setRoot(newRoot);
+    setPatternPath(null);
+  }
+
+  function handleModeChange(newMode: Mode) {
+    setMode(newMode);
+    setType(newMode === "scale" ? SCALE_TYPES[0].value : CHORD_TYPES[0].value);
+    setPatternPath(null);
+  }
+
+  function handleTypeChange(newType: string) {
+    setType(newType);
+    setPatternPath(null);
+  }
 
   function handleTuningPresetChange(newPreset: TuningPreset) {
     if (newPreset === "custom") {
       setCustomTuning(tuning);
     }
     setTuningPreset(newPreset);
+    setPatternPath(null);
   }
 
   function handleCustomStringChange(stringIndex: number, note: string) {
     setCustomTuning((prev) =>
       prev.map((n, i) => (i === stringIndex ? note : n)),
     );
+    setPatternPath(null);
+  }
+
+  function handlePatternStepAdd(step: PatternStep) {
+    setPatternPath((prev) => (prev ? [...prev, step] : [step]));
+  }
+
+  function handlePatternStepRemoveFrom(step: PatternStep) {
+    setPatternPath((prev) => {
+      if (!prev) return prev;
+      const index = prev.findIndex(
+        (p) => p.stringIndex === step.stringIndex && p.fret === step.fret,
+      );
+      return index === -1 ? prev : prev.slice(0, index);
+    });
   }
 
   const notes =
@@ -82,7 +114,11 @@ function App() {
   const typeLabel =
     (mode === "scale" ? SCALE_TYPES : CHORD_TYPES).find((t) => t.value === type)
       ?.label ?? type;
-  const announcement = `Showing ${root} ${typeLabel} ${mode}, ${TUNING_PRESETS.find((p) => p.value === tuningPreset)?.label} tuning.`;
+  const patternStatus =
+    patternPath === null
+      ? ""
+      : ` Building a pattern: ${patternPath.length} note${patternPath.length === 1 ? "" : "s"} placed.`;
+  const announcement = `Showing ${root} ${typeLabel} ${mode}, ${TUNING_PRESETS.find((p) => p.value === tuningPreset)?.label} tuning.${patternStatus}`;
 
   return (
     <>
@@ -93,11 +129,11 @@ function App() {
         </p>
         <Controls
           root={root}
-          onRootChange={setRoot}
+          onRootChange={handleRootChange}
           mode={mode}
           onModeChange={handleModeChange}
           type={type}
-          onTypeChange={setType}
+          onTypeChange={handleTypeChange}
           tuningPreset={tuningPreset}
           onTuningPresetChange={handleTuningPresetChange}
           customTuning={customTuning}
@@ -107,6 +143,24 @@ function App() {
           leftHanded={leftHanded}
           onLeftHandedChange={setLeftHanded}
         />
+        <div className="pattern-builder-bar">
+          {patternPath === null ? (
+            <button type="button" onClick={() => setPatternPath([])}>
+              Build a pattern
+            </button>
+          ) : (
+            <>
+              <button type="button" onClick={() => setPatternPath(null)}>
+                Clear pattern
+              </button>
+              <span className="pattern-builder-hint">
+                {patternPath.length === 0
+                  ? "Click a note to start your pattern."
+                  : "Click a dashed note to continue, or a placed note to remove it and everything after."}
+              </span>
+            </>
+          )}
+        </div>
         <div className="fretboard-scroll">
           <Fretboard
             tuning={tuning}
@@ -116,6 +170,9 @@ function App() {
             labelMode={labelMode}
             leftHanded={leftHanded}
             onNoteClick={playNote}
+            patternPath={patternPath}
+            onPatternStepAdd={handlePatternStepAdd}
+            onPatternStepRemoveFrom={handlePatternStepRemoveFrom}
           />
         </div>
       </main>
