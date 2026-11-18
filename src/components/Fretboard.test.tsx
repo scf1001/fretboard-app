@@ -69,6 +69,22 @@ describe("Fretboard", () => {
     expect(container.querySelectorAll("text")).toHaveLength(5);
   });
 
+  it("gives each marker a tooltip with both its note name and interval", () => {
+    const { container } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+      />,
+    );
+    const titles = Array.from(container.querySelectorAll("title")).map(
+      (title) => title.textContent,
+    );
+    expect(titles).toContain("E (R)");
+    expect(titles).toContain("A (4)");
+  });
+
   it("highlights nothing when given no notes", () => {
     const { container } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={2} />,

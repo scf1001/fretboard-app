@@ -130,10 +130,12 @@ function Fretboard({
               highlightedNotes,
             );
             if (!matched) return [];
-            const label =
-              labelMode === "interval" && rootNote !== undefined
+            const interval =
+              rootNote !== undefined
                 ? intervalFromRoot(rootNote, matched)
-                : matched;
+                : undefined;
+            const label =
+              labelMode === "interval" && interval ? interval : matched;
             return [
               <NoteMarker
                 key={`${stringIndex}-${fret}`}
@@ -141,6 +143,7 @@ function Fretboard({
                 y={stringY(stringIndex, numStrings)}
                 label={label}
                 isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
+                tooltip={interval ? `${matched} (${interval})` : matched}
               />,
             ];
           },

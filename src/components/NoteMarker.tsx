@@ -3,14 +3,16 @@ type NoteMarkerProps = {
   y: number;
   label: string;
   isRoot: boolean;
+  tooltip: string;
 };
 
 /** A highlighted note on the fretboard. The root is a distinct shape, not just a colour. */
-function NoteMarker({ x, y, label, isRoot }: NoteMarkerProps) {
+function NoteMarker({ x, y, label, isRoot, tooltip }: NoteMarkerProps) {
   const size = isRoot ? 11 : 9;
 
   return (
-    <g>
+    <g style={{ cursor: "pointer" }}>
+      <title>{tooltip}</title>
       {isRoot ? (
         <rect
           x={x - size}
