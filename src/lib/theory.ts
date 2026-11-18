@@ -38,6 +38,29 @@ export const ROOTS = [
 
 export type Mode = "scale" | "chord";
 
+export type LabelMode = "name" | "interval";
+
+const INTERVAL_LABELS = [
+  "R",
+  "b2",
+  "2",
+  "b3",
+  "3",
+  "4",
+  "b5",
+  "5",
+  "b6",
+  "6",
+  "b7",
+  "7",
+];
+
+/** The interval of `note` above `root`, as a short label (e.g. "R", "b3", "5"). */
+export function intervalFromRoot(root: string, note: string): string {
+  const semitones = (Note.chroma(note)! - Note.chroma(root)! + 12) % 12;
+  return INTERVAL_LABELS[semitones];
+}
+
 /** A curated set of scale types, good enough for v1 without listing every scale Tonal knows. */
 export const SCALE_TYPES = [
   { value: "major", label: "Major" },

@@ -16,6 +16,8 @@ function renderControls(overrides = {}) {
     onTuningPresetChange: vi.fn(),
     customTuning: STANDARD_TUNING,
     onCustomStringChange: vi.fn(),
+    labelMode: "name" as const,
+    onLabelModeChange: vi.fn(),
     ...overrides,
   };
   render(<Controls {...props} />);
@@ -99,5 +101,14 @@ describe("Controls", () => {
     await user.clear(stringOneInput);
 
     expect(props.onCustomStringChange).toHaveBeenCalledWith(5, "");
+  });
+
+  it("calls onLabelModeChange when switching to intervals", async () => {
+    const user = userEvent.setup();
+    const props = renderControls();
+
+    await user.click(screen.getByLabelText("Intervals"));
+
+    expect(props.onLabelModeChange).toHaveBeenCalledWith("interval");
   });
 });

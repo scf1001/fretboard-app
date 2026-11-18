@@ -3,6 +3,7 @@ import {
   ROOTS,
   SCALE_TYPES,
   TUNING_PRESETS,
+  type LabelMode,
   type Mode,
   type Tuning,
   type TuningPreset,
@@ -20,9 +21,11 @@ type ControlsProps = {
   onTuningPresetChange: (preset: TuningPreset) => void;
   customTuning: Tuning;
   onCustomStringChange: (stringIndex: number, note: string) => void;
+  labelMode: LabelMode;
+  onLabelModeChange: (labelMode: LabelMode) => void;
 };
 
-/** Dropdowns and toggles for choosing a root note, a scale or chord, and a tuning. */
+/** Dropdowns and toggles for choosing a root note, a scale or chord, a tuning, and a label style. */
 function Controls({
   root,
   onRootChange,
@@ -34,6 +37,8 @@ function Controls({
   onTuningPresetChange,
   customTuning,
   onCustomStringChange,
+  labelMode,
+  onLabelModeChange,
 }: ControlsProps) {
   const types = mode === "scale" ? SCALE_TYPES : CHORD_TYPES;
 
@@ -98,6 +103,30 @@ function Controls({
           ))}
         </select>
       </label>
+
+      <fieldset>
+        <legend>Labels</legend>
+        <label>
+          <input
+            type="radio"
+            name="labelMode"
+            value="name"
+            checked={labelMode === "name"}
+            onChange={() => onLabelModeChange("name")}
+          />
+          Note names
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="labelMode"
+            value="interval"
+            checked={labelMode === "interval"}
+            onChange={() => onLabelModeChange("interval")}
+          />
+          Intervals
+        </label>
+      </fieldset>
 
       {tuningPreset === "custom" && (
         <fieldset className="custom-tuning">

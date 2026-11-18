@@ -5,6 +5,7 @@ import {
   DADGAD_TUNING,
   DROP_D_TUNING,
   findMatchingNote,
+  intervalFromRoot,
   noteAt,
   sameNote,
   scaleNotes,
@@ -141,5 +142,28 @@ describe("TUNING_PRESETS", () => {
   it("leaves custom with no fixed tuning", () => {
     const custom = TUNING_PRESETS.find((preset) => preset.value === "custom");
     expect(custom?.tuning).toBeNull();
+  });
+});
+
+describe("intervalFromRoot", () => {
+  it("labels the root itself as R", () => {
+    expect(intervalFromRoot("A", "A")).toBe("R");
+  });
+
+  it("labels a minor third", () => {
+    expect(intervalFromRoot("A", "C")).toBe("b3");
+  });
+
+  it("labels a perfect fifth", () => {
+    expect(intervalFromRoot("A", "E")).toBe("5");
+  });
+
+  it("labels a minor seventh", () => {
+    expect(intervalFromRoot("A", "G")).toBe("b7");
+  });
+
+  it("ignores octave and enharmonic spelling", () => {
+    expect(intervalFromRoot("A2", "E4")).toBe("5");
+    expect(intervalFromRoot("C", "Db")).toBe("b2");
   });
 });

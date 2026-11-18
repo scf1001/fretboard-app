@@ -1,4 +1,11 @@
-import { findMatchingNote, noteAt, sameNote, type Tuning } from "../lib/theory";
+import {
+  findMatchingNote,
+  intervalFromRoot,
+  noteAt,
+  sameNote,
+  type LabelMode,
+  type Tuning,
+} from "../lib/theory";
 import Fret from "./Fret";
 import NoteMarker from "./NoteMarker";
 import String from "./String";
@@ -19,6 +26,7 @@ type FretboardProps = {
   numFrets: number;
   rootNote?: string;
   highlightedNotes?: string[];
+  labelMode?: LabelMode;
 };
 
 function fretCenterX(fret: number): number {
@@ -36,6 +44,7 @@ function Fretboard({
   numFrets,
   rootNote,
   highlightedNotes = [],
+  labelMode = "name",
 }: FretboardProps) {
   const numStrings = tuning.length;
   const fretboardTop = MARGIN_TOP;
@@ -101,12 +110,16 @@ function Fretboard({
               highlightedNotes,
             );
             if (!matched) return [];
+            const label =
+              labelMode === "interval" && rootNote !== undefined
+                ? intervalFromRoot(rootNote, matched)
+                : matched;
             return [
               <NoteMarker
                 key={`${stringIndex}-${fret}`}
                 x={fretCenterX(fret)}
                 y={stringY(stringIndex, numStrings)}
-                label={matched}
+                label={label}
                 isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
               />,
             ];

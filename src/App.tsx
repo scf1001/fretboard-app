@@ -8,6 +8,7 @@ import {
   SCALE_TYPES,
   STANDARD_TUNING,
   TUNING_PRESETS,
+  type LabelMode,
   type Mode,
   type Tuning,
   type TuningPreset,
@@ -20,6 +21,7 @@ function App() {
   const [type, setType] = useState(SCALE_TYPES[0].value);
   const [tuningPreset, setTuningPreset] = useState<TuningPreset>("standard");
   const [customTuning, setCustomTuning] = useState<Tuning>(STANDARD_TUNING);
+  const [labelMode, setLabelMode] = useState<LabelMode>("name");
 
   function handleModeChange(newMode: Mode) {
     setMode(newMode);
@@ -61,12 +63,15 @@ function App() {
         onTuningPresetChange={handleTuningPresetChange}
         customTuning={customTuning}
         onCustomStringChange={handleCustomStringChange}
+        labelMode={labelMode}
+        onLabelModeChange={setLabelMode}
       />
       <Fretboard
         tuning={tuning}
         numFrets={15}
         rootNote={root}
         highlightedNotes={notes}
+        labelMode={labelMode}
       />
     </main>
   );

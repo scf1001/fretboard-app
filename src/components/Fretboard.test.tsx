@@ -59,4 +59,21 @@ describe("Fretboard", () => {
     );
     expect(container.querySelectorAll("text")).toHaveLength(0);
   });
+
+  it("labels notes with their interval from the root when labelMode is interval", () => {
+    const { getAllByText, queryAllByText } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+        labelMode="interval"
+      />,
+    );
+    // E (the root) appears at 3 positions, A (a perfect fourth above E) at 2.
+    expect(getAllByText("R")).toHaveLength(3);
+    expect(getAllByText("4")).toHaveLength(2);
+    expect(queryAllByText("E")).toHaveLength(0);
+    expect(queryAllByText("A")).toHaveLength(0);
+  });
 });
