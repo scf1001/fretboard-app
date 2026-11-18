@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Controls from "./components/Controls";
 import Fretboard from "./components/Fretboard";
 import {
@@ -13,16 +13,44 @@ import {
   type Tuning,
   type TuningPreset,
 } from "./lib/theory";
+import { searchParamsToState, stateToSearchParams } from "./lib/urlState";
 import "./App.css";
 
 function App() {
-  const [root, setRoot] = useState("A");
-  const [mode, setMode] = useState<Mode>("scale");
-  const [type, setType] = useState(SCALE_TYPES[0].value);
-  const [tuningPreset, setTuningPreset] = useState<TuningPreset>("standard");
-  const [customTuning, setCustomTuning] = useState<Tuning>(STANDARD_TUNING);
-  const [labelMode, setLabelMode] = useState<LabelMode>("name");
-  const [leftHanded, setLeftHanded] = useState(false);
+  const initial = searchParamsToState(
+    new URLSearchParams(window.location.search),
+  );
+
+  const [root, setRoot] = useState(initial.root ?? "A");
+  const [mode, setMode] = useState<Mode>(initial.mode ?? "scale");
+  const [type, setType] = useState(initial.type ?? SCALE_TYPES[0].value);
+  const [tuningPreset, setTuningPreset] = useState<TuningPreset>(
+    initial.tuningPreset ?? "standard",
+  );
+  const [customTuning, setCustomTuning] = useState<Tuning>(
+    initial.customTuning ?? STANDARD_TUNING,
+  );
+  const [labelMode, setLabelMode] = useState<LabelMode>(
+    initial.labelMode ?? "name",
+  );
+  const [leftHanded, setLeftHanded] = useState(initial.leftHanded ?? false);
+
+  useEffect(() => {
+    const params = stateToSearchParams({
+      root,
+      mode,
+      type,
+      tuningPreset,
+      customTuning,
+      labelMode,
+      leftHanded,
+    });
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [root, mode, type, tuningPreset, customTuning, labelMode, leftHanded]);
 
   function handleModeChange(newMode: Mode) {
     setMode(newMode);
