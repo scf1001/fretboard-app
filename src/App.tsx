@@ -50,9 +50,17 @@ function App() {
   const notes =
     mode === "scale" ? scaleNotes(root, type) : chordNotes(root, type);
 
+  const typeLabel =
+    (mode === "scale" ? SCALE_TYPES : CHORD_TYPES).find((t) => t.value === type)
+      ?.label ?? type;
+  const announcement = `Showing ${root} ${typeLabel} ${mode}, ${TUNING_PRESETS.find((p) => p.value === tuningPreset)?.label} tuning.`;
+
   return (
     <main>
       <h1>Fretboard</h1>
+      <p className="visually-hidden" aria-live="polite">
+        {announcement}
+      </p>
       <Controls
         root={root}
         onRootChange={setRoot}

@@ -18,7 +18,7 @@ function NoteMarker({ x, y, label, isRoot }: NoteMarkerProps) {
           width={size * 2}
           height={size * 2}
           rx={2}
-          fill="var(--accent)"
+          fill="var(--root-marker)"
         />
       ) : (
         <circle

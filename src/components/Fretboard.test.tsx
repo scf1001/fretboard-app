@@ -29,7 +29,23 @@ describe("Fretboard", () => {
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
     );
     expect(
-      getByRole("img", { name: "Guitar fretboard, 6 strings, 12 frets" }),
+      getByRole("img", { name: "Guitar fretboard, 6 strings, 12 frets." }),
+    ).toBeInTheDocument();
+  });
+
+  it("describes the highlighted notes in the accessible label, marking the root", () => {
+    const { getByRole } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={12}
+        rootNote="A"
+        highlightedNotes={["A", "C", "D", "E", "G"]}
+      />,
+    );
+    expect(
+      getByRole("img", {
+        name: "Guitar fretboard, 6 strings, 12 frets. Highlighting: A (root), C, D, E, G.",
+      }),
     ).toBeInTheDocument();
   });
 

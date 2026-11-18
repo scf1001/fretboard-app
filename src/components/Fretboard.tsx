@@ -39,6 +39,20 @@ function stringY(stringIndex: number, numStrings: number): number {
   return MARGIN_TOP + STRING_SPACING * (numStrings - 1 - stringIndex);
 }
 
+/** A screen-reader-friendly description of what's highlighted, e.g. "A (root), C, D, E, G". */
+function describeHighlights(
+  rootNote: string | undefined,
+  highlightedNotes: string[],
+): string {
+  if (highlightedNotes.length === 0) return "";
+  const parts = highlightedNotes.map((note) =>
+    rootNote !== undefined && sameNote(note, rootNote)
+      ? `${note} (root)`
+      : note,
+  );
+  return ` Highlighting: ${parts.join(", ")}.`;
+}
+
 /** A static SVG fretboard: its strings, frets, fret position markers, and any highlighted notes. */
 function Fretboard({
   tuning,
@@ -63,7 +77,7 @@ function Fretboard({
   return (
     <svg
       role="img"
-      aria-label={`Guitar fretboard, ${numStrings} strings, ${numFrets} frets`}
+      aria-label={`Guitar fretboard, ${numStrings} strings, ${numFrets} frets.${describeHighlights(rootNote, highlightedNotes)}`}
       viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
