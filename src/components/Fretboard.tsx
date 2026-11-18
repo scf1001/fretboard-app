@@ -25,6 +25,11 @@ function fretCenterX(fret: number): number {
   return fret === 0 ? OPEN_NOTE_X : MARGIN_LEFT + FRET_WIDTH * (fret - 0.5);
 }
 
+/** The thinnest, highest-pitched string is drawn at the top; the thickest, lowest at the bottom. */
+function stringY(stringIndex: number, numStrings: number): number {
+  return MARGIN_TOP + STRING_SPACING * (numStrings - 1 - stringIndex);
+}
+
 /** A static SVG fretboard: its strings, frets, fret position markers, and any highlighted notes. */
 function Fretboard({
   tuning,
@@ -61,7 +66,7 @@ function Fretboard({
         return (
           <String
             key={openNote + stringIndex}
-            y={MARGIN_TOP + STRING_SPACING * stringIndex}
+            y={stringY(stringIndex, numStrings)}
             x1={MARGIN_LEFT}
             x2={fretboardRight}
             thickness={thickness}
@@ -100,7 +105,7 @@ function Fretboard({
               <NoteMarker
                 key={`${stringIndex}-${fret}`}
                 x={fretCenterX(fret)}
-                y={MARGIN_TOP + STRING_SPACING * stringIndex}
+                y={stringY(stringIndex, numStrings)}
                 label={matched}
                 isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
               />,
