@@ -1,4 +1,12 @@
-import { CHORD_TYPES, ROOTS, SCALE_TYPES, type Mode } from "../lib/theory";
+import {
+  CHORD_TYPES,
+  ROOTS,
+  SCALE_TYPES,
+  TUNING_PRESETS,
+  type Mode,
+  type Tuning,
+  type TuningPreset,
+} from "../lib/theory";
 import "./Controls.css";
 
 type ControlsProps = {
@@ -8,9 +16,13 @@ type ControlsProps = {
   onModeChange: (mode: Mode) => void;
   type: string;
   onTypeChange: (type: string) => void;
+  tuningPreset: TuningPreset;
+  onTuningPresetChange: (preset: TuningPreset) => void;
+  customTuning: Tuning;
+  onCustomStringChange: (stringIndex: number, note: string) => void;
 };
 
-/** Dropdowns and toggles for choosing a root note and a scale or chord. */
+/** Dropdowns and toggles for choosing a root note, a scale or chord, and a tuning. */
 function Controls({
   root,
   onRootChange,
@@ -18,6 +30,10 @@ function Controls({
   onModeChange,
   type,
   onTypeChange,
+  tuningPreset,
+  onTuningPresetChange,
+  customTuning,
+  onCustomStringChange,
 }: ControlsProps) {
   const types = mode === "scale" ? SCALE_TYPES : CHORD_TYPES;
 
@@ -68,6 +84,41 @@ function Controls({
           ))}
         </select>
       </label>
+
+      <label>
+        Tuning
+        <select
+          value={tuningPreset}
+          onChange={(e) => onTuningPresetChange(e.target.value as TuningPreset)}
+        >
+          {TUNING_PRESETS.map((preset) => (
+            <option key={preset.value} value={preset.value}>
+              {preset.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {tuningPreset === "custom" && (
+        <fieldset className="custom-tuning">
+          <legend>Custom tuning (open string notes)</legend>
+          {customTuning
+            .map((_, stringIndex) => stringIndex)
+            .reverse()
+            .map((stringIndex) => (
+              <label key={stringIndex}>
+                String {customTuning.length - stringIndex}
+                <input
+                  type="text"
+                  value={customTuning[stringIndex]}
+                  onChange={(e) =>
+                    onCustomStringChange(stringIndex, e.target.value)
+                  }
+                />
+              </label>
+            ))}
+        </fieldset>
+      )}
     </div>
   );
 }

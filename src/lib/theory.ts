@@ -7,6 +7,20 @@ export const STANDARD_TUNING: Tuning = ["E2", "A2", "D3", "G3", "B3", "E4"];
 export const DROP_D_TUNING: Tuning = ["D2", "A2", "D3", "G3", "B3", "E4"];
 export const DADGAD_TUNING: Tuning = ["D2", "A2", "D3", "G3", "A3", "D4"];
 
+export type TuningPreset = "standard" | "dropD" | "dadgad" | "custom";
+
+/** Built-in tuning presets; "custom" has no fixed tuning, the user supplies their own. */
+export const TUNING_PRESETS: {
+  value: TuningPreset;
+  label: string;
+  tuning: Tuning | null;
+}[] = [
+  { value: "standard", label: "Standard", tuning: STANDARD_TUNING },
+  { value: "dropD", label: "Drop D", tuning: DROP_D_TUNING },
+  { value: "dadgad", label: "DADGAD", tuning: DADGAD_TUNING },
+  { value: "custom", label: "Custom", tuning: null },
+];
+
 export const ROOTS = [
   "C",
   "C#",

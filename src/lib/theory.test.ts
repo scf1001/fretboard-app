@@ -10,6 +10,7 @@ import {
   scaleNotes,
   SCALE_TYPES,
   STANDARD_TUNING,
+  TUNING_PRESETS,
 } from "./theory";
 
 describe("noteAt", () => {
@@ -124,5 +125,21 @@ describe("SCALE_TYPES", () => {
 describe("CHORD_TYPES", () => {
   it.each(CHORD_TYPES)("$label resolves to notes", ({ value }) => {
     expect(chordNotes("C", value).length).toBeGreaterThan(0);
+  });
+});
+
+describe("TUNING_PRESETS", () => {
+  it("gives every built-in preset a 6-note tuning", () => {
+    const builtIns = TUNING_PRESETS.filter(
+      (preset) => preset.value !== "custom",
+    );
+    for (const preset of builtIns) {
+      expect(preset.tuning).toHaveLength(6);
+    }
+  });
+
+  it("leaves custom with no fixed tuning", () => {
+    const custom = TUNING_PRESETS.find((preset) => preset.value === "custom");
+    expect(custom?.tuning).toBeNull();
   });
 });

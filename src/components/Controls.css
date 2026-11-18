@@ -30,3 +30,21 @@
   font: inherit;
   padding: 4px 8px;
 }
+
+.controls .custom-tuning {
+  flex-direction: row;
+  gap: 8px;
+}
+
+.controls .custom-tuning label {
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+}
+
+.controls .custom-tuning input {
+  font: inherit;
+  width: 3em;
+  padding: 4px;
+  text-align: center;
+}

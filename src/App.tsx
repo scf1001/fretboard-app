@@ -7,7 +7,10 @@ import {
   scaleNotes,
   SCALE_TYPES,
   STANDARD_TUNING,
+  TUNING_PRESETS,
   type Mode,
+  type Tuning,
+  type TuningPreset,
 } from "./lib/theory";
 import "./App.css";
 
@@ -15,10 +18,30 @@ function App() {
   const [root, setRoot] = useState("A");
   const [mode, setMode] = useState<Mode>("scale");
   const [type, setType] = useState(SCALE_TYPES[0].value);
+  const [tuningPreset, setTuningPreset] = useState<TuningPreset>("standard");
+  const [customTuning, setCustomTuning] = useState<Tuning>(STANDARD_TUNING);
 
   function handleModeChange(newMode: Mode) {
     setMode(newMode);
     setType(newMode === "scale" ? SCALE_TYPES[0].value : CHORD_TYPES[0].value);
+  }
+
+  const tuning =
+    tuningPreset === "custom"
+      ? customTuning
+      : TUNING_PRESETS.find((preset) => preset.value === tuningPreset)!.tuning!;
+
+  function handleTuningPresetChange(newPreset: TuningPreset) {
+    if (newPreset === "custom") {
+      setCustomTuning(tuning);
+    }
+    setTuningPreset(newPreset);
+  }
+
+  function handleCustomStringChange(stringIndex: number, note: string) {
+    setCustomTuning((prev) =>
+      prev.map((n, i) => (i === stringIndex ? note : n)),
+    );
   }
 
   const notes =
@@ -34,9 +57,13 @@ function App() {
         onModeChange={handleModeChange}
         type={type}
         onTypeChange={setType}
+        tuningPreset={tuningPreset}
+        onTuningPresetChange={handleTuningPresetChange}
+        customTuning={customTuning}
+        onCustomStringChange={handleCustomStringChange}
       />
       <Fretboard
-        tuning={STANDARD_TUNING}
+        tuning={tuning}
         numFrets={15}
         rootNote={root}
         highlightedNotes={notes}
