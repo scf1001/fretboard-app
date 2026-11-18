@@ -69,14 +69,16 @@ function App() {
         leftHanded={leftHanded}
         onLeftHandedChange={setLeftHanded}
       />
-      <Fretboard
-        tuning={tuning}
-        numFrets={15}
-        rootNote={root}
-        highlightedNotes={notes}
-        labelMode={labelMode}
-        leftHanded={leftHanded}
-      />
+      <div className="fretboard-scroll">
+        <Fretboard
+          tuning={tuning}
+          numFrets={15}
+          rootNote={root}
+          highlightedNotes={notes}
+          labelMode={labelMode}
+          leftHanded={leftHanded}
+        />
+      </div>
     </main>
   );
 }

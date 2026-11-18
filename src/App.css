@@ -5,3 +5,8 @@ main {
   gap: 16px;
   padding: 32px 20px;
 }
+
+.fretboard-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
