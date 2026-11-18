@@ -30,7 +30,14 @@ A React web app for guitarists that shows notes, scales and chords on the fretbo
 - Accessible: keyboard navigation, ARIA labels, and colour-blind-safe highlighting that also uses shape or labels, not colour alone
 
 ## Later
-Sound on click (Web Audio API or Tone.js), chord shapes and CAGED positions, capo, 7-string and bass, a quiz mode, favourites.
+1. **Sound on click** — play a note's pitch via Web Audio API or Tone.js when its marker is clicked/tapped
+2. **Chord shapes / CAGED positions** — preset moveable fingering diagrams for common chord shapes
+3. **Pattern builder** — layered on top of the current scale/chord selection: click a starting scale-tone, then click through connected notes to trace one playable fingering shape (2-notes-per-string, 3-notes-per-string, or any mix). Candidates are the nearest not-yet-used scale-tone up/down on the same string, or a scale-tone within ±2–3 frets on an adjacent string. The traced path replaces the full-neck highlight; clicking an already-placed note removes it and everything after it; a "clear" action resets to the full scale highlight.
+4. **Capo** — shift all fretted positions down by a capo offset
+5. **7/8-string guitars** — variable string count
+6. **Bass tunings** — 4/5/6-string bass presets
+7. **Quiz mode** — test the user on notes/scales/intervals
+8. **Favourites** — save specific root+scale/chord+tuning combos (a saved pattern-builder shape could be one kind of favourite)
 
 ## Milestones
 1. Set up the project, write the theory functions and their tests
