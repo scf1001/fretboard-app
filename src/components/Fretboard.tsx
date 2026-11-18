@@ -1,24 +1,37 @@
-import type { Tuning } from "../lib/theory";
+import { findMatchingNote, noteAt, sameNote, type Tuning } from "../lib/theory";
 import Fret from "./Fret";
+import NoteMarker from "./NoteMarker";
 import String from "./String";
 
 const SINGLE_MARKER_FRETS = new Set([3, 5, 7, 9, 15, 17, 19, 21]);
 const DOUBLE_MARKER_FRETS = new Set([12, 24]);
 
-const MARGIN_LEFT = 24;
+const MARGIN_LEFT = 40;
 const MARGIN_TOP = 20;
 const MARGIN_BOTTOM = 30;
 const FRET_WIDTH = 50;
 const STRING_SPACING = 28;
 const NUT_WIDTH = 6;
+const OPEN_NOTE_X = 18;
 
 type FretboardProps = {
   tuning: Tuning;
   numFrets: number;
+  rootNote?: string;
+  highlightedNotes?: string[];
 };
 
-/** A static SVG fretboard: its strings, frets, and fret position markers. */
-function Fretboard({ tuning, numFrets }: FretboardProps) {
+function fretCenterX(fret: number): number {
+  return fret === 0 ? OPEN_NOTE_X : MARGIN_LEFT + FRET_WIDTH * (fret - 0.5);
+}
+
+/** A static SVG fretboard: its strings, frets, fret position markers, and any highlighted notes. */
+function Fretboard({
+  tuning,
+  numFrets,
+  rootNote,
+  highlightedNotes = [],
+}: FretboardProps) {
   const numStrings = tuning.length;
   const fretboardTop = MARGIN_TOP;
   const fretboardBottom = MARGIN_TOP + STRING_SPACING * (numStrings - 1);
@@ -57,7 +70,6 @@ function Fretboard({ tuning, numFrets }: FretboardProps) {
       })}
       {Array.from({ length: numFrets }, (_, i) => i + 1).map((fretNumber) => {
         const wireX = MARGIN_LEFT + FRET_WIDTH * fretNumber;
-        const centerX = wireX - FRET_WIDTH / 2;
         const markerDots = DOUBLE_MARKER_FRETS.has(fretNumber)
           ? 2
           : SINGLE_MARKER_FRETS.has(fretNumber)
@@ -68,7 +80,7 @@ function Fretboard({ tuning, numFrets }: FretboardProps) {
             key={fretNumber}
             number={fretNumber}
             wireX={wireX}
-            centerX={centerX}
+            centerX={fretCenterX(fretNumber)}
             top={fretboardTop}
             bottom={fretboardBottom}
             markerDots={markerDots}
@@ -76,6 +88,26 @@ function Fretboard({ tuning, numFrets }: FretboardProps) {
           />
         );
       })}
+      {tuning.flatMap((_, stringIndex) =>
+        Array.from({ length: numFrets + 1 }, (_, fret) => fret).flatMap(
+          (fret) => {
+            const matched = findMatchingNote(
+              noteAt(stringIndex, fret, tuning),
+              highlightedNotes,
+            );
+            if (!matched) return [];
+            return [
+              <NoteMarker
+                key={`${stringIndex}-${fret}`}
+                x={fretCenterX(fret)}
+                y={MARGIN_TOP + STRING_SPACING * stringIndex}
+                label={matched}
+                isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
+              />,
+            ];
+          },
+        ),
+      )}
     </svg>
   );
 }

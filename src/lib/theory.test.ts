@@ -3,7 +3,9 @@ import {
   chordNotes,
   DADGAD_TUNING,
   DROP_D_TUNING,
+  findMatchingNote,
   noteAt,
+  sameNote,
   scaleNotes,
   STANDARD_TUNING,
 } from "./theory";
@@ -84,5 +86,29 @@ describe("chordNotes", () => {
 
   it("returns the notes of a dominant seventh chord", () => {
     expect(chordNotes("G", "7")).toEqual(["G", "B", "D", "F"]);
+  });
+});
+
+describe("sameNote", () => {
+  it("treats enharmonic spellings as the same note", () => {
+    expect(sameNote("A#", "Bb")).toBe(true);
+  });
+
+  it("ignores octave", () => {
+    expect(sameNote("E2", "E4")).toBe(true);
+  });
+
+  it("returns false for different pitch classes", () => {
+    expect(sameNote("C", "D")).toBe(false);
+  });
+});
+
+describe("findMatchingNote", () => {
+  it("returns the candidate with the same pitch class", () => {
+    expect(findMatchingNote("A#", ["Bb", "D", "F"])).toBe("Bb");
+  });
+
+  it("returns undefined when there is no match", () => {
+    expect(findMatchingNote("C", ["D", "E"])).toBeUndefined();
   });
 });

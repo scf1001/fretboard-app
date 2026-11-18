@@ -27,3 +27,20 @@ export function scaleNotes(root: string, type: string): string[] {
 export function chordNotes(root: string, type: string): string[] {
   return Chord.getChord(type, root).notes;
 }
+
+/** Whether two notes share the same pitch class, ignoring octave and spelling (e.g. "A" and "A2", or "Bb" and "A#"). */
+export function sameNote(a: string, b: string): boolean {
+  return Note.chroma(a) === Note.chroma(b);
+}
+
+/**
+ * The candidate with the same pitch class as `note`, if any. Used to display a fretted
+ * note with a candidate's preferred spelling, e.g. matching a scale's "Bb" instead of
+ * showing the "A#" a raw semitone count would produce.
+ */
+export function findMatchingNote(
+  note: string,
+  candidates: string[],
+): string | undefined {
+  return candidates.find((candidate) => sameNote(note, candidate));
+}

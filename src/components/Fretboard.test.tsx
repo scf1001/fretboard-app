@@ -32,4 +32,31 @@ describe("Fretboard", () => {
       getByRole("img", { name: "Guitar fretboard, 6 strings, 12 frets" }),
     ).toBeInTheDocument();
   });
+
+  it("highlights every matching note, using a distinct shape for the root", () => {
+    const { container, getAllByText } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+      />,
+    );
+    // E appears at (string 0, fret 0), (string 2, fret 2) and (string 5, fret 0).
+    expect(getAllByText("E")).toHaveLength(3);
+    // A appears at (string 1, fret 0) and (string 3, fret 2).
+    expect(getAllByText("A")).toHaveLength(2);
+    // The root (E) is drawn as a square; the non-root (A) as a circle.
+    expect(container.querySelectorAll("rect")).toHaveLength(3);
+    expect(container.querySelectorAll("circle")).toHaveLength(2);
+    // No other note letters should appear.
+    expect(container.querySelectorAll("text")).toHaveLength(5);
+  });
+
+  it("highlights nothing when given no notes", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={2} />,
+    );
+    expect(container.querySelectorAll("text")).toHaveLength(0);
+  });
 });
