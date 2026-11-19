@@ -131,6 +131,8 @@ function Fretboard({
   const id = useId();
   const woodId = `${id}-wood`;
   const grainId = `${id}-grain`;
+  const knockoutId = `${id}-knockout`;
+  const knockoutFilter = `url(#${knockoutId})`;
   const boardTop = fretboardTop - BOARD_PADDING;
   const boardHeight = fretboardBottom - fretboardTop + 2 * BOARD_PADDING;
 
@@ -176,6 +178,33 @@ function Fretboard({
           />
           <feComposite in="grain" in2="SourceGraphic" operator="in" />
         </filter>
+        {/* "Knockout" edge: grows the shape's outline by 2px (feMorphology dilate) and fills
+            that border with the wood colour, then draws the shape on top. On bare wood the
+            border is invisible; over an inlay it cuts a channel of wood around the shape so
+            it keeps its contrast. userSpaceOnUse makes the filter cover the whole board:
+            the default region is the shape's bounding box, which for a horizontal string
+            has zero height, and the string would vanish. */}
+        <filter
+          id={knockoutId}
+          filterUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width={width}
+          height={height}
+        >
+          <feMorphology
+            in="SourceAlpha"
+            operator="dilate"
+            radius={2}
+            result="spread"
+          />
+          <feFlood floodColor="var(--board-wood-centre)" />
+          <feComposite in2="spread" operator="in" result="edge" />
+          <feMerge>
+            <feMergeNode in="edge" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       {/* Decorative only. Not wrapped in a <g>, so `g` stays a reliable hook for note markers. */}
       <rect
@@ -213,6 +242,7 @@ function Fretboard({
             x1={toX(MARGIN_LEFT)}
             x2={toX(fretboardRight)}
             thickness={thickness}
+            filter={knockoutFilter}
           />
         );
       })}
@@ -258,6 +288,7 @@ function Fretboard({
               isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
               tooltip={interval ? `${matched} (${interval})` : matched}
               isCandidate={isCandidate}
+              filter={knockoutFilter}
               onClick={() => {
                 if (patternPath) {
                   if (isCandidate) {

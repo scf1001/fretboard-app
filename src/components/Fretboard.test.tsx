@@ -51,6 +51,38 @@ describe("Fretboard", () => {
     );
   });
 
+  it("gives strings and note markers the knockout edge, so they stay visible over inlays", () => {
+    const { container } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+      />,
+    );
+    const knockout = container.querySelector('filter[id$="-knockout"]');
+    expect(knockout).not.toBeNull();
+    const reference = `url(#${knockout!.id})`;
+
+    const filtered = (selector: string) =>
+      [...container.querySelectorAll(selector)].filter(
+        (element) => element.getAttribute("filter") === reference,
+      );
+    expect(filtered("line")).toHaveLength(STANDARD_TUNING.length);
+    expect(filtered("g")).toHaveLength(5);
+  });
+
+  it("draws fret inlays in the wood's inlay colour", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
+    );
+    const inlays = container.querySelectorAll("circle");
+    expect(inlays.length).toBeGreaterThan(0);
+    inlays.forEach((inlay) =>
+      expect(inlay).toHaveAttribute("fill", "var(--board-inlay)"),
+    );
+  });
+
   it.each(WOODS)("draws the board in %s when chosen", (wood) => {
     const { container } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} wood={wood} />,

@@ -7,6 +7,8 @@ type NoteMarkerProps = {
   onClick?: () => void;
   /** A clickable next option in the pattern builder, not yet chosen — drawn as a dashed outline. */
   isCandidate?: boolean;
+  /** An SVG filter reference, e.g. the board's knockout edge. */
+  filter?: string;
 };
 
 /** A highlighted note on the fretboard. The root is a distinct shape, not just a colour. */
@@ -18,11 +20,16 @@ function NoteMarker({
   tooltip,
   onClick,
   isCandidate = false,
+  filter,
 }: NoteMarkerProps) {
   const size = isRoot ? 11 : 9;
 
   return (
-    <g style={{ cursor: "pointer", pointerEvents: "all" }} onClick={onClick}>
+    <g
+      style={{ cursor: "pointer", pointerEvents: "all" }}
+      filter={filter}
+      onClick={onClick}
+    >
       <title>{tooltip}</title>
       {isRoot ? (
         <rect

@@ -7,6 +7,9 @@
   - ink: text drawn straight on the wood (e.g. pattern-builder candidate labels)
   - marker-outline: outline on every note marker, so markers keep at least 3:1
     contrast against the wood whatever their fill colour
+  - inlay: fret position inlays. Decorative (fret numbers give the position), so no
+    contrast minimum, but strings and markers drawn over them get a wood-coloured
+    knockout edge that keeps them at 8:1 or more against the inlay
 */
 [data-wood="maple"] {
   --board-wood-edge: #d9b98a;
@@ -15,6 +18,7 @@
   --board-hardware: #5b5560;
   --board-ink: #08060d;
   --board-marker-outline: #201b29;
+  --board-inlay: #1c1816;
 }
 
 [data-wood="rosewood"] {
@@ -24,6 +28,7 @@
   --board-hardware: #d4cfc6;
   --board-ink: #f5efe6;
   --board-marker-outline: #f5efe6;
+  --board-inlay: #efe8dc;
 }
 
 [data-wood="ebony"] {
@@ -33,4 +38,5 @@
   --board-hardware: #bdb7ae;
   --board-ink: #f5efe6;
   --board-marker-outline: #f5efe6;
+  --board-inlay: #efe8dc;
 }

@@ -33,7 +33,12 @@ function Fret({
         strokeWidth={2}
       />
       {markerDots === 1 && (
-        <circle cx={centerX} cy={middle} r={dotRadius} fill="currentColor" />
+        <circle
+          cx={centerX}
+          cy={middle}
+          r={dotRadius}
+          fill="var(--board-inlay)"
+        />
       )}
       {markerDots === 2 && (
         <>
@@ -41,13 +46,13 @@ function Fret({
             cx={centerX}
             cy={middle - dotOffset}
             r={dotRadius}
-            fill="currentColor"
+            fill="var(--board-inlay)"
           />
           <circle
             cx={centerX}
             cy={middle + dotOffset}
             r={dotRadius}
-            fill="currentColor"
+            fill="var(--board-inlay)"
           />
         </>
       )}
