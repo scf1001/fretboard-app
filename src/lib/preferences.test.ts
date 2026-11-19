@@ -27,8 +27,12 @@ describe("loadPreferences", () => {
   });
 
   it("round-trips what savePreferences stored", () => {
-    savePreferences({ wood: "ebony", inlay: "sharktooth" });
-    expect(loadPreferences()).toEqual({ wood: "ebony", inlay: "sharktooth" });
+    savePreferences({ wood: "ebony", inlay: "sharktooth", volume: 40 });
+    expect(loadPreferences()).toEqual({
+      wood: "ebony",
+      inlay: "sharktooth",
+      volume: 40,
+    });
   });
 
   it("falls back to the default wood for an unknown wood", () => {
@@ -42,18 +46,38 @@ describe("loadPreferences", () => {
       JSON.stringify({ wood: "ebony", inlay: "stars" }),
     );
     expect(loadPreferences()).toEqual({
+      ...DEFAULT_PREFERENCES,
       wood: "ebony",
-      inlay: DEFAULT_PREFERENCES.inlay,
     });
   });
 
   it("loads preferences saved before inlays existed, using the default inlay", () => {
     localStorage.setItem(KEY, JSON.stringify({ wood: "rosewood" }));
     expect(loadPreferences()).toEqual({
+      ...DEFAULT_PREFERENCES,
       wood: "rosewood",
-      inlay: DEFAULT_PREFERENCES.inlay,
     });
   });
+
+  it("keeps a saved volume of 0, rather than treating it as missing", () => {
+    localStorage.setItem(KEY, JSON.stringify({ volume: 0 }));
+    expect(loadPreferences().volume).toBe(0);
+  });
+
+  it.each([150, -5, "loud", null])(
+    "falls back to the default volume for an invalid volume: %s",
+    (volume) => {
+      localStorage.setItem(
+        KEY,
+        JSON.stringify({ wood: "ebony", inlay: "blocks", volume }),
+      );
+      expect(loadPreferences()).toEqual({
+        wood: "ebony",
+        inlay: "blocks",
+        volume: DEFAULT_PREFERENCES.volume,
+      });
+    },
+  );
 
   it.each(["not json", "null", "42", '"rosewood"'])(
     "falls back to the defaults for malformed data: %s",

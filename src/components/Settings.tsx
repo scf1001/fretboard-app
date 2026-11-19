@@ -8,6 +8,9 @@ type SettingsProps = {
   onWoodChange: (wood: Wood) => void;
   inlay: Inlay;
   onInlayChange: (inlay: Inlay) => void;
+  /** 0–100. */
+  volume: number;
+  onVolumeChange: (volume: number) => void;
 };
 
 /** "rosewood" -> "Rosewood". */
@@ -16,10 +19,17 @@ function optionLabel(value: string): string {
 }
 
 /**
- * A Settings button that opens a modal dialog of display preferences.
+ * A Settings button that opens a modal dialog of personal preferences.
  * Choices apply immediately, so the fretboard behind the dialog previews them.
  */
-function Settings({ wood, onWoodChange, inlay, onInlayChange }: SettingsProps) {
+function Settings({
+  wood,
+  onWoodChange,
+  inlay,
+  onInlayChange,
+  volume,
+  onVolumeChange,
+}: SettingsProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
@@ -65,6 +75,23 @@ function Settings({ wood, onWoodChange, inlay, onInlayChange }: SettingsProps) {
               </option>
             ))}
           </select>
+        </label>
+        <label className="settings-row">
+          Volume:
+          {/* A native range input: arrow keys, Home/End and screen-reader announcements
+              come for free. aria-valuetext makes it read "80%" rather than just "80". */}
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={volume}
+            aria-valuetext={`${volume}%`}
+            onChange={(event) => onVolumeChange(Number(event.target.value))}
+          />
+          <span className="settings-value" aria-hidden="true">
+            {volume}%
+          </span>
         </label>
         <div className="settings-actions">
           <button type="button" onClick={() => dialogRef.current?.close()}>

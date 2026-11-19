@@ -2,17 +2,20 @@ import { DEFAULT_INLAY, INLAYS, type Inlay } from "./inlays";
 import { DEFAULT_WOOD, WOODS, type Wood } from "./woods";
 
 /**
- * Personal display preferences, kept in localStorage rather than the URL: they're about
- * how this user likes the app to look, not part of what a shared link should show.
+ * Personal preferences, kept in localStorage rather than the URL: they're about how this
+ * user likes the app to look and sound, not part of what a shared link should show.
  */
 export type Preferences = {
   wood: Wood;
   inlay: Inlay;
+  /** How loud notes play, 0–100. */
+  volume: number;
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
   wood: DEFAULT_WOOD,
   inlay: DEFAULT_INLAY,
+  volume: 100,
 };
 
 const STORAGE_KEY = "fretboard-app:preferences";
@@ -23,6 +26,15 @@ function isWood(value: unknown): value is Wood {
 
 function isInlay(value: unknown): value is Inlay {
   return INLAYS.some((inlay) => inlay === value);
+}
+
+function isVolume(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= 0 &&
+    value <= 100
+  );
 }
 
 /**
@@ -42,10 +54,11 @@ export function loadPreferences(
     }
     // Each field is checked on its own, so one bad or missing value (e.g. preferences
     // saved before inlays existed) doesn't throw away the others.
-    const { wood, inlay } = saved as Record<string, unknown>;
+    const { wood, inlay, volume } = saved as Record<string, unknown>;
     return {
       wood: isWood(wood) ? wood : DEFAULT_PREFERENCES.wood,
       inlay: isInlay(inlay) ? inlay : DEFAULT_PREFERENCES.inlay,
+      volume: isVolume(volume) ? volume : DEFAULT_PREFERENCES.volume,
     };
   } catch {
     return DEFAULT_PREFERENCES;

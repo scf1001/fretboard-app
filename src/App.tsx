@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Controls from "./components/Controls";
 import Fretboard from "./components/Fretboard";
 import Settings from "./components/Settings";
-import { playNote } from "./lib/audio";
+import { playNote, setVolume } from "./lib/audio";
 import { type PatternStep } from "./lib/pattern";
 import {
   loadPreferences,
@@ -46,7 +46,14 @@ function App() {
   // Passing the function itself (not calling it) means it only runs on the first render.
   const [preferences, setPreferences] = useState<Preferences>(loadPreferences);
 
-  /** Applies and saves a change to one or more display preferences. */
+  // Keep the audio module's volume in step with the saved preference. An effect (code
+  // that runs after rendering) is the place for this, as it changes something outside
+  // React; the [preferences.volume] list means it only re-runs when the volume changes.
+  useEffect(() => {
+    setVolume(preferences.volume);
+  }, [preferences.volume]);
+
+  /** Applies and saves a change to one or more preferences. */
   function updatePreferences(changes: Partial<Preferences>) {
     const next = { ...preferences, ...changes };
     setPreferences(next);
@@ -147,6 +154,8 @@ function App() {
             onWoodChange={(wood) => updatePreferences({ wood })}
             inlay={preferences.inlay}
             onInlayChange={(inlay) => updatePreferences({ inlay })}
+            volume={preferences.volume}
+            onVolumeChange={(volume) => updatePreferences({ volume })}
           />
         </div>
         <p className="visually-hidden" aria-live="polite">

@@ -11,6 +11,8 @@ function renderOpen(props: Partial<ComponentProps<typeof Settings>> = {}) {
       onWoodChange={() => {}}
       inlay="dots"
       onInlayChange={() => {}}
+      volume={100}
+      onVolumeChange={() => {}}
       {...props}
     />,
   );
@@ -25,6 +27,8 @@ describe("Settings", () => {
         onWoodChange={() => {}}
         inlay="dots"
         onInlayChange={() => {}}
+        volume={100}
+        onVolumeChange={() => {}}
       />,
     );
     // Closed dialogs are hidden from the accessibility tree.
@@ -77,6 +81,26 @@ describe("Settings", () => {
       target: { value: "sharktooth" },
     });
     expect(onInlayChange).toHaveBeenCalledWith("sharktooth");
+  });
+
+  it("shows the current volume on a 0–100% slider", () => {
+    renderOpen({ volume: 40 });
+
+    const slider = screen.getByRole("slider", { name: /volume/i });
+    expect(slider).toHaveValue("40");
+    expect(slider).toHaveAttribute("min", "0");
+    expect(slider).toHaveAttribute("max", "100");
+    expect(slider).toHaveAttribute("aria-valuetext", "40%");
+  });
+
+  it("reports a newly chosen volume as a number", () => {
+    const onVolumeChange = vi.fn();
+    renderOpen({ onVolumeChange });
+
+    fireEvent.change(screen.getByRole("slider", { name: /volume/i }), {
+      target: { value: "25" },
+    });
+    expect(onVolumeChange).toHaveBeenCalledWith(25);
   });
 
   it("closes when Done is pressed", () => {
