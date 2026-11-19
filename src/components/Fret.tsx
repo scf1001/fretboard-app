@@ -10,10 +10,17 @@ type FretProps = {
   markerDots: number;
   showNumber: boolean;
   inlay: Inlay;
+  /** Vertical distance between neighbouring strings. Blocks are sized from it. */
+  stringSpacing: number;
 };
 
-/** Gap between a block-style inlay and the outer strings. */
+/** Gap between the trapezoid and sharktooth inlays and the outer strings. */
 const INLAY_INSET = 6;
+/**
+ * How far blocks reach past the 2nd and 5th strings. A block edge exactly on a string
+ * would hide the string's outline against it, so the string crosses just inside instead.
+ */
+const BLOCK_OVERHANG = 4;
 
 /**
  * The inlay shape for one marked fret, as an SVG polygon's points.
@@ -27,10 +34,15 @@ function inlayPoints(
   wireX: number,
   top: number,
   bottom: number,
+  stringSpacing: number,
 ): string {
   const halfWidth = (wireX - centerX) * 0.6; // negative in left-handed mode
-  const y1 = top + INLAY_INSET;
-  const y2 = bottom - INLAY_INSET;
+  // Blocks span roughly the 2nd to the 5th string, like real block inlays; the other
+  // shapes run nearly the full width of the board.
+  const inset =
+    inlay === "blocks" ? stringSpacing - BLOCK_OVERHANG : INLAY_INSET;
+  const y1 = top + inset;
+  const y2 = bottom - inset;
   const left = centerX - halfWidth;
   const right = centerX + halfWidth;
 
@@ -67,6 +79,7 @@ function Fret({
   markerDots,
   showNumber,
   inlay,
+  stringSpacing,
 }: FretProps) {
   const middle = (top + bottom) / 2;
   const dotRadius = 5;
@@ -106,7 +119,14 @@ function Fret({
           inlay === "sharktooth") && (
           <polygon
             data-part="inlay"
-            points={inlayPoints(inlay, centerX, wireX, top, bottom)}
+            points={inlayPoints(
+              inlay,
+              centerX,
+              wireX,
+              top,
+              bottom,
+              stringSpacing,
+            )}
             fill="var(--board-inlay)"
           />
         )}

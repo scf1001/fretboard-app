@@ -109,6 +109,31 @@ describe("Fretboard", () => {
     },
   );
 
+  it("spans block inlays from about the 2nd string to the 5th, not the full neck", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="blocks" />,
+    );
+    // String y positions, top (1st string) to bottom (6th).
+    const stringYs = [...container.querySelectorAll("line")]
+      .filter((line) => line.getAttribute("y1") === line.getAttribute("y2"))
+      .map((line) => Number(line.getAttribute("y1")))
+      .sort((a, b) => a - b);
+    const [, second, , , fifth] = stringYs;
+    const blockYs = container
+      .querySelector('[data-part="inlay"]')!
+      .getAttribute("points")!
+      .split(" ")
+      .map((point) => Number(point.split(",")[1]));
+
+    const blockTop = Math.min(...blockYs);
+    const blockBottom = Math.max(...blockYs);
+    // Just past the 2nd and 5th strings, and well clear of the 1st and 6th.
+    expect(blockTop).toBeLessThan(second);
+    expect(blockTop).toBeGreaterThan(second - 8);
+    expect(blockBottom).toBeGreaterThan(fifth);
+    expect(blockBottom).toBeLessThan(fifth + 8);
+  });
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,

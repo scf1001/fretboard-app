@@ -268,6 +268,7 @@ function Fretboard({
             markerDots={markerDots}
             showNumber={markerDots > 0}
             inlay={inlay}
+            stringSpacing={STRING_SPACING}
           />
         );
       })}
