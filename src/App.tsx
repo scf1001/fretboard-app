@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import Controls from "./components/Controls";
 import Fretboard from "./components/Fretboard";
+import Settings from "./components/Settings";
 import { playNote } from "./lib/audio";
 import { type PatternStep } from "./lib/pattern";
+import {
+  loadPreferences,
+  savePreferences,
+  type Preferences,
+} from "./lib/preferences";
 import {
   chordNotes,
   CHORD_TYPES,
@@ -16,6 +22,7 @@ import {
   type TuningPreset,
 } from "./lib/theory";
 import { searchParamsToState, stateToSearchParams } from "./lib/urlState";
+import { type Wood } from "./lib/woods";
 import "./App.css";
 
 function App() {
@@ -37,6 +44,14 @@ function App() {
   );
   const [leftHanded, setLeftHanded] = useState(initial.leftHanded ?? false);
   const [patternPath, setPatternPath] = useState<PatternStep[] | null>(null);
+  // Passing the function itself (not calling it) means it only runs on the first render.
+  const [preferences, setPreferences] = useState<Preferences>(loadPreferences);
+
+  function handleWoodChange(wood: Wood) {
+    const next = { ...preferences, wood };
+    setPreferences(next);
+    savePreferences(next);
+  }
 
   useEffect(() => {
     const params = stateToSearchParams({
@@ -124,6 +139,11 @@ function App() {
     <>
       <main>
         <h1>Fretboard</h1>
+        {/* After the heading in the DOM so screen readers meet the page title first;
+            CSS places it in the top-right corner. */}
+        <div className="app-settings">
+          <Settings wood={preferences.wood} onWoodChange={handleWoodChange} />
+        </div>
         <p className="visually-hidden" aria-live="polite">
           {announcement}
         </p>
@@ -169,6 +189,7 @@ function App() {
             highlightedNotes={notes}
             labelMode={labelMode}
             leftHanded={leftHanded}
+            wood={preferences.wood}
             onNoteClick={playNote}
             patternPath={patternPath}
             onPatternStepAdd={handlePatternStepAdd}
