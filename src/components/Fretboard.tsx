@@ -9,15 +9,12 @@ import {
   type Tuning,
 } from "../lib/theory";
 import { nextPatternCandidates, type PatternStep } from "../lib/pattern";
-import { DEFAULT_INLAY, type Inlay } from "../lib/inlays";
+import { DEFAULT_INLAY, markerCount, type Inlay } from "../lib/inlays";
 import { DEFAULT_WOOD, INLAY_MATERIAL, type Wood } from "../lib/woods";
 import "./Fretboard.css";
 import Fret from "./Fret";
 import NoteMarker from "./NoteMarker";
 import String from "./String";
-
-const SINGLE_MARKER_FRETS = new Set([3, 5, 7, 9, 15, 17, 19, 21]);
-const DOUBLE_MARKER_FRETS = new Set([12, 24]);
 
 const MARGIN_LEFT = 40;
 const MARGIN_TOP = 20;
@@ -306,11 +303,7 @@ function Fretboard({
       })}
       {Array.from({ length: numFrets }, (_, i) => i + 1).map((fretNumber) => {
         const wireX = MARGIN_LEFT + FRET_WIDTH * fretNumber;
-        const markerDots = DOUBLE_MARKER_FRETS.has(fretNumber)
-          ? 2
-          : SINGLE_MARKER_FRETS.has(fretNumber)
-            ? 1
-            : 0;
+        const markerDots = markerCount(fretNumber, inlay);
         return (
           <Fret
             key={fretNumber}

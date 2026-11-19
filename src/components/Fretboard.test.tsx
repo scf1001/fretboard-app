@@ -97,14 +97,15 @@ describe("Fretboard", () => {
   });
 
   it.each(["blocks", "trapezoids", "sharktooth"] as const)(
-    "draws one %s inlay on every marked fret, including the 12th",
+    "draws one %s inlay on every marked fret, from the 1st to the 12th",
     (inlay) => {
-      const { container } = render(
+      const { container, getByText } = render(
         <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay={inlay} />,
       );
       const inlays = container.querySelectorAll('[data-part="inlay"]');
-      // Marked frets: 3, 5, 7, 9 and 12.
-      expect(inlays).toHaveLength(5);
+      // Marked frets: 1, 3, 5, 7, 9 and 12.
+      expect(inlays).toHaveLength(6);
+      expect(getByText("1")).toBeInTheDocument();
       inlays.forEach((shape) => expect(shape.tagName).toBe("polygon"));
     },
   );
