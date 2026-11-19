@@ -9,6 +9,8 @@ import {
   type Tuning,
 } from "../lib/theory";
 import { nextPatternCandidates, type PatternStep } from "../lib/pattern";
+import { DEFAULT_WOOD, type Wood } from "../lib/woods";
+import "./Fretboard.css";
 import Fret from "./Fret";
 import NoteMarker from "./NoteMarker";
 import String from "./String";
@@ -33,6 +35,8 @@ type FretboardProps = {
   highlightedNotes?: string[];
   labelMode?: LabelMode;
   leftHanded?: boolean;
+  /** Which wood to draw the board in. Picks a token set from Fretboard.css. */
+  wood?: Wood;
   onNoteClick?: (pitch: string) => void;
   /** While building a pattern: the notes placed so far. `null` means the builder is off. */
   patternPath?: PatternStep[] | null;
@@ -105,6 +109,7 @@ function Fretboard({
   highlightedNotes = [],
   labelMode = "name",
   leftHanded = false,
+  wood = DEFAULT_WOOD,
   onNoteClick,
   patternPath = null,
   onPatternStepAdd,
@@ -136,6 +141,7 @@ function Fretboard({
       viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
+      data-wood={wood}
       style={{ color: "var(--board-hardware)" }}
     >
       <defs>

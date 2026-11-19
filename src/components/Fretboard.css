@@ -1,0 +1,15 @@
+/*
+  One token set per fretboard wood, chosen with the SVG's data-wood attribute.
+  Woods look the same in both colour schemes, so none of these change for dark mode.
+  - wood-edge / wood-centre: the gradient across the neck
+  - grain: colour of the feTurbulence grain layer
+  - hardware: strings, frets, nut and inlay dots
+  - ink: text drawn straight on the wood (e.g. pattern-builder candidate labels)
+*/
+[data-wood="maple"] {
+  --board-wood-edge: #d9b98a;
+  --board-wood-centre: #ecd3a5;
+  --board-grain: #6b4a2b;
+  --board-hardware: #5b5560;
+  --board-ink: #08060d;
+}

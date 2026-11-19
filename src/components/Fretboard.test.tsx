@@ -34,6 +34,16 @@ describe("Fretboard", () => {
     expect(grainRect.getAttribute("filter")).toMatch(/^url\(#.+-grain\)$/);
   });
 
+  it("draws the board in maple by default", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
+    );
+    expect(container.querySelector("svg")).toHaveAttribute(
+      "data-wood",
+      "maple",
+    );
+  });
+
   it("exposes an accessible label describing the fretboard", () => {
     const { getByRole } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
