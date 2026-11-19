@@ -18,7 +18,8 @@ import String from "./String";
 
 const MARGIN_LEFT = 40;
 const MARGIN_TOP = 20;
-const MARGIN_BOTTOM = 30;
+/** Room below the bottom string for the fret numbers (see NUMBER_BASELINE in Fret). */
+const MARGIN_BOTTOM = 32;
 const FRET_WIDTH = 50;
 const STRING_SPACING = 28;
 const NUT_WIDTH = 6;

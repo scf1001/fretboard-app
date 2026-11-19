@@ -233,6 +233,37 @@ describe("Fretboard", () => {
     }
   });
 
+  it("keeps fret numbers clear of note markers on the bottom string", () => {
+    // A is the root at the 5th fret on the low E string: the biggest marker, right above "5".
+    const { container, getByText } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={12}
+        rootNote="A"
+        highlightedNotes={["A"]}
+      />,
+    );
+    const rootSquares = [...container.querySelectorAll("g > rect")];
+    const markerBottom = Math.max(
+      ...rootSquares.map(
+        (rect) =>
+          Number(rect.getAttribute("y")) + Number(rect.getAttribute("height")),
+      ),
+    );
+    const KNOCKOUT_AND_OUTLINE = 2 + 0.75;
+    const DIGIT_HEIGHT = 9; // 12px digits
+    const numberTop = Number(getByText("5").getAttribute("y")) - DIGIT_HEIGHT;
+    expect(numberTop).toBeGreaterThan(markerBottom + KNOCKOUT_AND_OUTLINE);
+
+    // And the numbers still fit inside the SVG.
+    const svgHeight = Number(
+      container.querySelector("svg")!.getAttribute("height"),
+    );
+    expect(Number(getByText("5").getAttribute("y"))).toBeLessThanOrEqual(
+      svgHeight,
+    );
+  });
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,

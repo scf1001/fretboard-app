@@ -22,6 +22,12 @@ type FretProps = {
  */
 const BLOCK_OVERHANG = 4;
 /**
+ * Where fret numbers sit, below the bottom string. The biggest note marker (the root's
+ * square, plus its outline and knockout edge) reaches ~14px below the string, and 12px
+ * digits are ~9px tall, so a baseline at 27 leaves a ~4px gap between them.
+ */
+const NUMBER_BASELINE = 27;
+/**
  * How much shorter a trapezoid's body-side edge is than its nut-side edge, as a share
  * of the inlay's height taken off each end. 0.1 makes the short edge 80% of the long one.
  */
@@ -148,7 +154,7 @@ function Fret({
         // colour (which switches for dark mode) rather than the SVG default of black.
         <text
           x={centerX}
-          y={bottom + 20}
+          y={bottom + NUMBER_BASELINE}
           textAnchor="middle"
           fontSize={12}
           fill="var(--text)"
