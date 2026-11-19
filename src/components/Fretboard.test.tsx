@@ -2,6 +2,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import Fretboard from "./Fretboard";
 import { STANDARD_TUNING } from "../lib/theory";
+import { WOODS } from "../lib/woods";
 
 describe("Fretboard", () => {
   it("renders a line for each string", () => {
@@ -48,6 +49,13 @@ describe("Fretboard", () => {
     shapes.forEach((shape) =>
       expect(shape).toHaveAttribute("stroke", "var(--board-marker-outline)"),
     );
+  });
+
+  it.each(WOODS)("draws the board in %s when chosen", (wood) => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} wood={wood} />,
+    );
+    expect(container.querySelector("svg")).toHaveAttribute("data-wood", wood);
   });
 
   it("draws the board in maple by default", () => {

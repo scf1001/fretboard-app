@@ -16,3 +16,21 @@
   --board-ink: #08060d;
   --board-marker-outline: #201b29;
 }
+
+[data-wood="rosewood"] {
+  --board-wood-edge: #3b2418;
+  --board-wood-centre: #5a3826;
+  --board-grain: #1e110a;
+  --board-hardware: #d4cfc6;
+  --board-ink: #f5efe6;
+  --board-marker-outline: #f5efe6;
+}
+
+[data-wood="ebony"] {
+  --board-wood-edge: #141110;
+  --board-wood-centre: #2a2420;
+  --board-grain: #000000;
+  --board-hardware: #bdb7ae;
+  --board-ink: #f5efe6;
+  --board-marker-outline: #f5efe6;
+}
