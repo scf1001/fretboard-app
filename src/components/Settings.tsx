@@ -1,21 +1,25 @@
 import { useRef } from "react";
+import { INLAYS, type Inlay } from "../lib/inlays";
 import { WOODS, type Wood } from "../lib/woods";
 import "./Settings.css";
 
 type SettingsProps = {
   wood: Wood;
   onWoodChange: (wood: Wood) => void;
+  inlay: Inlay;
+  onInlayChange: (inlay: Inlay) => void;
 };
 
-function woodLabel(wood: Wood): string {
-  return wood.charAt(0).toUpperCase() + wood.slice(1);
+/** "rosewood" -> "Rosewood". */
+function optionLabel(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 /**
  * A Settings button that opens a modal dialog of display preferences.
  * Choices apply immediately, so the fretboard behind the dialog previews them.
  */
-function Settings({ wood, onWoodChange }: SettingsProps) {
+function Settings({ wood, onWoodChange, inlay, onInlayChange }: SettingsProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
@@ -44,7 +48,20 @@ function Settings({ wood, onWoodChange }: SettingsProps) {
           >
             {WOODS.map((option) => (
               <option key={option} value={option}>
-                {woodLabel(option)}
+                {optionLabel(option)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="settings-row">
+          Fret inlays:
+          <select
+            value={inlay}
+            onChange={(event) => onInlayChange(event.target.value as Inlay)}
+          >
+            {INLAYS.map((option) => (
+              <option key={option} value={option}>
+                {optionLabel(option)}
               </option>
             ))}
           </select>

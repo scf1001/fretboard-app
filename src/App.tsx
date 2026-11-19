@@ -22,7 +22,6 @@ import {
   type TuningPreset,
 } from "./lib/theory";
 import { searchParamsToState, stateToSearchParams } from "./lib/urlState";
-import { type Wood } from "./lib/woods";
 import "./App.css";
 
 function App() {
@@ -47,8 +46,9 @@ function App() {
   // Passing the function itself (not calling it) means it only runs on the first render.
   const [preferences, setPreferences] = useState<Preferences>(loadPreferences);
 
-  function handleWoodChange(wood: Wood) {
-    const next = { ...preferences, wood };
+  /** Applies and saves a change to one or more display preferences. */
+  function updatePreferences(changes: Partial<Preferences>) {
+    const next = { ...preferences, ...changes };
     setPreferences(next);
     savePreferences(next);
   }
@@ -142,7 +142,12 @@ function App() {
         {/* After the heading in the DOM so screen readers meet the page title first;
             CSS places it in the top-right corner. */}
         <div className="app-settings">
-          <Settings wood={preferences.wood} onWoodChange={handleWoodChange} />
+          <Settings
+            wood={preferences.wood}
+            onWoodChange={(wood) => updatePreferences({ wood })}
+            inlay={preferences.inlay}
+            onInlayChange={(inlay) => updatePreferences({ inlay })}
+          />
         </div>
         <p className="visually-hidden" aria-live="polite">
           {announcement}
@@ -190,6 +195,7 @@ function App() {
             labelMode={labelMode}
             leftHanded={leftHanded}
             wood={preferences.wood}
+            inlay={preferences.inlay}
             onNoteClick={playNote}
             patternPath={patternPath}
             onPatternStepAdd={handlePatternStepAdd}

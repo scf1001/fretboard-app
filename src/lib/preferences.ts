@@ -1,3 +1,4 @@
+import { DEFAULT_INLAY, INLAYS, type Inlay } from "./inlays";
 import { DEFAULT_WOOD, WOODS, type Wood } from "./woods";
 
 /**
@@ -6,14 +7,22 @@ import { DEFAULT_WOOD, WOODS, type Wood } from "./woods";
  */
 export type Preferences = {
   wood: Wood;
+  inlay: Inlay;
 };
 
-export const DEFAULT_PREFERENCES: Preferences = { wood: DEFAULT_WOOD };
+export const DEFAULT_PREFERENCES: Preferences = {
+  wood: DEFAULT_WOOD,
+  inlay: DEFAULT_INLAY,
+};
 
 const STORAGE_KEY = "fretboard-app:preferences";
 
 function isWood(value: unknown): value is Wood {
   return WOODS.some((wood) => wood === value);
+}
+
+function isInlay(value: unknown): value is Inlay {
+  return INLAYS.some((inlay) => inlay === value);
 }
 
 /**
@@ -31,8 +40,13 @@ export function loadPreferences(
     if (typeof saved !== "object" || saved === null) {
       return DEFAULT_PREFERENCES;
     }
-    const { wood } = saved as Record<string, unknown>;
-    return { wood: isWood(wood) ? wood : DEFAULT_PREFERENCES.wood };
+    // Each field is checked on its own, so one bad or missing value (e.g. preferences
+    // saved before inlays existed) doesn't throw away the others.
+    const { wood, inlay } = saved as Record<string, unknown>;
+    return {
+      wood: isWood(wood) ? wood : DEFAULT_PREFERENCES.wood,
+      inlay: isInlay(inlay) ? inlay : DEFAULT_PREFERENCES.inlay,
+    };
   } catch {
     return DEFAULT_PREFERENCES;
   }
