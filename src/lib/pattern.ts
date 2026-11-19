@@ -7,8 +7,14 @@ export type PatternStep = {
   fret: number;
 };
 
-/** How many frets away on a neighbouring string still counts as "within reach". */
-const ADJACENT_STRING_FRET_RANGE = 3;
+/** How far past the last note the hand can stretch along the same string. */
+const SAME_STRING_REACH = 3;
+/**
+ * How far outside the frets already played on a string the hand can reach when it
+ * crosses to a neighbouring one: e.g. after 5, 7 and 9 on one string, frets 4–10 on the
+ * next. The fingers are already spread over that span, so this is the natural range.
+ */
+const STRING_CROSSING_SLACK = 1;
 
 function stepKey(step: PatternStep): string {
   return `${step.stringIndex}-${step.fret}`;
@@ -53,12 +59,28 @@ function allScalePositions(
 }
 
 /**
+ * The frets of the notes played on the path's current string: the run of steps at the
+ * end of the path that share the last step's string. This is where the hand is.
+ */
+function currentStringFrets(path: PatternStep[]): number[] {
+  const { stringIndex } = path[path.length - 1];
+  const frets: number[] = [];
+  for (let i = path.length - 1; i >= 0; i--) {
+    if (path[i].stringIndex !== stringIndex) break;
+    frets.push(path[i].fret);
+  }
+  return frets;
+}
+
+/**
  * The positions the user can click next while building a pattern: with an empty path,
- * every scale/chord tone on the neck (anywhere is a valid start). Otherwise, at most one
- * step per reachable string — the nearest not-yet-used scale-tone up and down the same
- * string, plus the single nearest scale-tone within `ADJACENT_STRING_FRET_RANGE` frets on
- * each neighbouring string (never more than one per string, even if several are in
- * reach). From the second note on, the pitch direction between the first two notes locks
+ * every scale/chord tone on the neck (anywhere is a valid start). Otherwise:
+ * - on the same string, the nearest not-yet-used scale-tone up and down, within
+ *   `SAME_STRING_REACH` frets of the last note;
+ * - on each neighbouring string, the single scale-tone nearest in pitch to the last note,
+ *   between the lowest and highest frets played on the current string, widened by
+ *   `STRING_CROSSING_SLACK` either side (never more than one per string).
+ * From the second note on, the pitch direction between the first two notes locks
  * in: every later candidate must continue strictly that way, so the whole path traces one
  * continuous ascending or descending run.
  */
@@ -96,10 +118,10 @@ export function nextPatternCandidates(
     scaleNotes,
   ).filter((fret) => isReachable(last.stringIndex, fret));
   const nextAbove = sameStringFrets
-    .filter((fret) => fret > last.fret)
+    .filter((fret) => fret > last.fret && fret <= last.fret + SAME_STRING_REACH)
     .sort((a, b) => a - b)[0];
   const nextBelow = sameStringFrets
-    .filter((fret) => fret < last.fret)
+    .filter((fret) => fret < last.fret && fret >= last.fret - SAME_STRING_REACH)
     .sort((a, b) => b - a)[0];
   if (nextAbove !== undefined) {
     candidates.push({ stringIndex: last.stringIndex, fret: nextAbove });
@@ -107,6 +129,10 @@ export function nextPatternCandidates(
   if (nextBelow !== undefined) {
     candidates.push({ stringIndex: last.stringIndex, fret: nextBelow });
   }
+
+  const handFrets = currentStringFrets(path);
+  const lowestReach = Math.min(...handFrets) - STRING_CROSSING_SLACK;
+  const highestReach = Math.max(...handFrets) + STRING_CROSSING_SLACK;
 
   for (const adjStringIndex of [last.stringIndex - 1, last.stringIndex + 1]) {
     if (adjStringIndex < 0 || adjStringIndex >= tuning.length) continue;
@@ -119,9 +145,7 @@ export function nextPatternCandidates(
       numFrets,
       scaleNotes,
     )
-      .filter(
-        (fret) => Math.abs(fret - last.fret) <= ADJACENT_STRING_FRET_RANGE,
-      )
+      .filter((fret) => fret >= lowestReach && fret <= highestReach)
       .filter((fret) => isReachable(adjStringIndex, fret))
       .sort(
         (a, b) =>
