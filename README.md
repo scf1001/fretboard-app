@@ -6,7 +6,7 @@ distinct shape rather than just a colour.
 
 **[Live demo](https://scf1001.github.io/fretboard-app/)**
 
-![Screenshot of the Fretboard app showing A minor pentatonic highlighted on a standard-tuned fretboard](docs/screenshot.png)
+![Screenshot of the Fretboard app showing A minor pentatonic highlighted on a standard-tuned rosewood fretboard with mother-of-pearl trapezoid inlays](docs/screenshot.png)
 
 ## Features
 
