@@ -31,7 +31,7 @@ function NoteMarker({
           width={size * 2}
           height={size * 2}
           rx={2}
-          fill={isCandidate ? "none" : "var(--root-marker)"}
+          fill={isCandidate ? "var(--board-wood-centre)" : "var(--root-marker)"}
           stroke="var(--board-marker-outline)"
           strokeWidth={1.5}
           strokeDasharray={isCandidate ? "3 2" : undefined}
@@ -41,7 +41,7 @@ function NoteMarker({
           cx={x}
           cy={y}
           r={size}
-          fill={isCandidate ? "none" : "var(--marker-bg)"}
+          fill={isCandidate ? "var(--board-wood-centre)" : "var(--marker-bg)"}
           stroke="var(--board-marker-outline)"
           strokeWidth={1.5}
           strokeDasharray={isCandidate ? "3 2" : undefined}

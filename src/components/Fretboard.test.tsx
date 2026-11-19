@@ -218,7 +218,12 @@ describe("Fretboard", () => {
         />,
       );
       expect(container.querySelectorAll("g")).toHaveLength(5);
-      expect(container.querySelectorAll("[stroke-dasharray]")).toHaveLength(5);
+      const candidates = container.querySelectorAll("[stroke-dasharray]");
+      expect(candidates).toHaveLength(5);
+      // Solid, not hollow: the label must stay readable over an inlay as well as bare wood.
+      candidates.forEach((shape) =>
+        expect(shape).toHaveAttribute("fill", "var(--board-wood-centre)"),
+      );
     });
 
     it("narrows to the placed note plus its candidates once the path has a start", () => {
