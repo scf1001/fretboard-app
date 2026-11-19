@@ -5,6 +5,8 @@
   - grain: colour of the feTurbulence grain layer
   - hardware: strings, frets, nut and inlay dots
   - ink: text drawn straight on the wood (e.g. pattern-builder candidate labels)
+  - marker-outline: outline on every note marker, so markers keep at least 3:1
+    contrast against the wood whatever their fill colour
 */
 [data-wood="maple"] {
   --board-wood-edge: #d9b98a;
@@ -12,4 +14,5 @@
   --board-grain: #6b4a2b;
   --board-hardware: #5b5560;
   --board-ink: #08060d;
+  --board-marker-outline: #201b29;
 }

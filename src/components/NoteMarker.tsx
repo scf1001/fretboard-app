@@ -32,8 +32,8 @@ function NoteMarker({
           height={size * 2}
           rx={2}
           fill={isCandidate ? "none" : "var(--root-marker)"}
-          stroke={isCandidate ? "var(--root-marker)" : undefined}
-          strokeWidth={isCandidate ? 1.5 : undefined}
+          stroke="var(--board-marker-outline)"
+          strokeWidth={1.5}
           strokeDasharray={isCandidate ? "3 2" : undefined}
         />
       ) : (
@@ -42,7 +42,7 @@ function NoteMarker({
           cy={y}
           r={size}
           fill={isCandidate ? "none" : "var(--marker-bg)"}
-          stroke="var(--accent)"
+          stroke="var(--board-marker-outline)"
           strokeWidth={1.5}
           strokeDasharray={isCandidate ? "3 2" : undefined}
         />

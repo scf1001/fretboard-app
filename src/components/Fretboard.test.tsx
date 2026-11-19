@@ -34,6 +34,22 @@ describe("Fretboard", () => {
     expect(grainRect.getAttribute("filter")).toMatch(/^url\(#.+-grain\)$/);
   });
 
+  it("outlines every note marker, root and non-root, so it stands out from the wood", () => {
+    const { container } = render(
+      <Fretboard
+        tuning={STANDARD_TUNING}
+        numFrets={2}
+        rootNote="E"
+        highlightedNotes={["E", "A"]}
+      />,
+    );
+    const shapes = container.querySelectorAll("g > rect, g > circle");
+    expect(shapes).toHaveLength(5);
+    shapes.forEach((shape) =>
+      expect(shape).toHaveAttribute("stroke", "var(--board-marker-outline)"),
+    );
+  });
+
   it("draws the board in maple by default", () => {
     const { container } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
