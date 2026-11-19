@@ -16,8 +16,6 @@ type FretProps = {
   inlayFilter?: string;
 };
 
-/** Gap between the sharktooth inlays and the outer strings. */
-const INLAY_INSET = 6;
 /**
  * How far blocks reach past the 2nd and 5th strings. A block edge exactly on a string
  * would hide the string's outline against it, so the string crosses just inside instead.
@@ -46,15 +44,11 @@ function inlayPoints(
 ): string {
   // Positive towards the body: negative in left-handed mode, where the body is on the left.
   const halfWidth = (wireX - centerX) * 0.6;
-  // Blocks span roughly the 2nd to the 5th string, like real block inlays. Trapezoids'
-  // long edge stops halfway between the outer strings and the next ones in. The
-  // sharktooth runs nearly the full width of the board.
+  // Blocks span roughly the 2nd to the 5th string, like real block inlays. The long
+  // edge of trapezoids and sharktooth stops halfway between the outer strings and the
+  // next ones in.
   const inset =
-    inlay === "blocks"
-      ? stringSpacing - BLOCK_OVERHANG
-      : inlay === "trapezoids"
-        ? stringSpacing / 2
-        : INLAY_INSET;
+    inlay === "blocks" ? stringSpacing - BLOCK_OVERHANG : stringSpacing / 2;
   const y1 = top + inset;
   const y2 = bottom - inset;
   const nutX = centerX - halfWidth;

@@ -200,25 +200,28 @@ describe("Fretboard", () => {
     },
   );
 
-  it("ends a trapezoid's long edge halfway between the outer strings and the next ones in", () => {
-    const { container } = render(
-      <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="trapezoids" />,
-    );
-    const [first, second, , , fifth, sixth] = [
-      ...container.querySelectorAll("line"),
-    ]
-      .filter((line) => line.getAttribute("y1") === line.getAttribute("y2"))
-      .map((line) => Number(line.getAttribute("y1")))
-      .sort((a, b) => a - b);
-    const ys = container
-      .querySelector('[data-part="inlay"]')!
-      .getAttribute("points")!
-      .split(" ")
-      .map((point) => Number(point.split(",")[1]));
+  it.each(["trapezoids", "sharktooth"] as const)(
+    "ends the long edge of %s halfway between the outer strings and the next ones in",
+    (inlay) => {
+      const { container } = render(
+        <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay={inlay} />,
+      );
+      const [first, second, , , fifth, sixth] = [
+        ...container.querySelectorAll("line"),
+      ]
+        .filter((line) => line.getAttribute("y1") === line.getAttribute("y2"))
+        .map((line) => Number(line.getAttribute("y1")))
+        .sort((a, b) => a - b);
+      const ys = container
+        .querySelector('[data-part="inlay"]')!
+        .getAttribute("points")!
+        .split(" ")
+        .map((point) => Number(point.split(",")[1]));
 
-    expect(Math.min(...ys)).toBeCloseTo((first + second) / 2);
-    expect(Math.max(...ys)).toBeCloseTo((fifth + sixth) / 2);
-  });
+      expect(Math.min(...ys)).toBeCloseTo((first + second) / 2);
+      expect(Math.max(...ys)).toBeCloseTo((fifth + sixth) / 2);
+    },
+  );
 
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
