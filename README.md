@@ -11,7 +11,7 @@ distinct shape rather than just a colour.
 ## Features
 
 - Highlights the notes of any scale or chord for any root
-- Click or tap a note to hear its pitch
+- Click or tap a note to hear its pitch, with a volume control in Settings
 - Pattern builder — trace a playable fingering shape one note at a time, choosing
   from the nearest scale tones on the same or an adjacent string
 - Note name or interval labels
