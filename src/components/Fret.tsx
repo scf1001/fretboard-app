@@ -16,19 +16,25 @@ type FretProps = {
   inlayFilter?: string;
 };
 
-/** Gap between the trapezoid and sharktooth inlays and the outer strings. */
+/** Gap between the sharktooth inlays and the outer strings. */
 const INLAY_INSET = 6;
 /**
  * How far blocks reach past the 2nd and 5th strings. A block edge exactly on a string
  * would hide the string's outline against it, so the string crosses just inside instead.
  */
 const BLOCK_OVERHANG = 4;
+/**
+ * How much shorter a trapezoid's body-side edge is than its nut-side edge, as a share
+ * of the inlay's height taken off each end. 0.1 makes the short edge 80% of the long one.
+ */
+const TRAPEZOID_TAPER = 0.1;
 
 /**
  * The inlay shape for one marked fret, as an SVG polygon's points.
- * Sizes come from the fret's own geometry, so the shapes scale with the layout. The
- * sharktooth is the one asymmetric shape: its upright edge sits on the wire side, and
- * because `wireX` is already mirrored in left-handed mode, the tooth mirrors with it.
+ * Sizes come from the fret's own geometry, so the shapes scale with the layout.
+ * Trapezoids and sharktooth aren't symmetrical along the neck: both point towards the
+ * body, which is the side this fret's wire is on. `wireX` is already mirrored in
+ * left-handed mode, so these shapes mirror with it.
  */
 function inlayPoints(
   inlay: "blocks" | "trapezoids" | "sharktooth",
@@ -38,35 +44,43 @@ function inlayPoints(
   bottom: number,
   stringSpacing: number,
 ): string {
-  const halfWidth = (wireX - centerX) * 0.6; // negative in left-handed mode
-  // Blocks span roughly the 2nd to the 5th string, like real block inlays; the other
-  // shapes run nearly the full width of the board.
+  // Positive towards the body: negative in left-handed mode, where the body is on the left.
+  const halfWidth = (wireX - centerX) * 0.6;
+  // Blocks span roughly the 2nd to the 5th string, like real block inlays. Trapezoids'
+  // long edge stops halfway between the outer strings and the next ones in. The
+  // sharktooth runs nearly the full width of the board.
   const inset =
-    inlay === "blocks" ? stringSpacing - BLOCK_OVERHANG : INLAY_INSET;
+    inlay === "blocks"
+      ? stringSpacing - BLOCK_OVERHANG
+      : inlay === "trapezoids"
+        ? stringSpacing / 2
+        : INLAY_INSET;
   const y1 = top + inset;
   const y2 = bottom - inset;
-  const left = centerX - halfWidth;
-  const right = centerX + halfWidth;
+  const nutX = centerX - halfWidth;
+  const bodyX = centerX + halfWidth;
+  const taper = (y2 - y1) * TRAPEZOID_TAPER;
 
   const corners: [number, number][] =
     inlay === "blocks"
       ? [
-          [left, y1],
-          [right, y1],
-          [right, y2],
-          [left, y2],
+          [nutX, y1],
+          [bodyX, y1],
+          [bodyX, y2],
+          [nutX, y2],
         ]
       : inlay === "trapezoids"
-        ? [
-            [centerX - halfWidth * 0.6, y1],
-            [centerX + halfWidth * 0.6, y1],
-            [right, y2],
-            [left, y2],
+        ? // Long edge on the nut side, short edge on the body side.
+          [
+            [nutX, y1],
+            [bodyX, y1 + taper],
+            [bodyX, y2 - taper],
+            [nutX, y2],
           ]
         : [
-            [right, y1],
-            [right, y2],
-            [left, y2],
+            [bodyX, y1],
+            [bodyX, y2],
+            [nutX, y2],
           ];
   return corners.map(([x, y]) => `${x},${y}`).join(" ");
 }

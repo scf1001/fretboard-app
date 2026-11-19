@@ -167,6 +167,59 @@ describe("Fretboard", () => {
       .forEach((shape) => expect(shape).not.toHaveAttribute("filter"));
   });
 
+  it.each([
+    [false, "right"],
+    [true, "left"],
+  ] as const)(
+    "points trapezoids towards the body, with the shorter edge on the body side (left-handed: %s)",
+    (leftHanded, bodySide) => {
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={12}
+          inlay="trapezoids"
+          leftHanded={leftHanded}
+        />,
+      );
+      const points = container
+        .querySelector('[data-part="inlay"]')!
+        .getAttribute("points")!
+        .split(" ")
+        .map((point) => point.split(",").map(Number));
+      const xs = points.map(([x]) => x);
+      const edgeLength = (x: number) => {
+        const ys = points.filter(([px]) => px === x).map(([, y]) => y);
+        expect(ys).toHaveLength(2); // the parallel edges run across the neck
+        return Math.abs(ys[1] - ys[0]);
+      };
+      const rightEdge = edgeLength(Math.max(...xs));
+      const leftEdge = edgeLength(Math.min(...xs));
+      const [bodyEdge, nutEdge] =
+        bodySide === "right" ? [rightEdge, leftEdge] : [leftEdge, rightEdge];
+      expect(bodyEdge).toBeLessThan(nutEdge);
+    },
+  );
+
+  it("ends a trapezoid's long edge halfway between the outer strings and the next ones in", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="trapezoids" />,
+    );
+    const [first, second, , , fifth, sixth] = [
+      ...container.querySelectorAll("line"),
+    ]
+      .filter((line) => line.getAttribute("y1") === line.getAttribute("y2"))
+      .map((line) => Number(line.getAttribute("y1")))
+      .sort((a, b) => a - b);
+    const ys = container
+      .querySelector('[data-part="inlay"]')!
+      .getAttribute("points")!
+      .split(" ")
+      .map((point) => Number(point.split(",")[1]));
+
+    expect(Math.min(...ys)).toBeCloseTo((first + second) / 2);
+    expect(Math.max(...ys)).toBeCloseTo((fifth + sixth) / 2);
+  });
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,
