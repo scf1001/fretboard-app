@@ -12,6 +12,8 @@ type FretProps = {
   inlay: Inlay;
   /** Vertical distance between neighbouring strings. Blocks are sized from it. */
   stringSpacing: number;
+  /** An SVG filter reference for the inlays' material, e.g. mother of pearl. */
+  inlayFilter?: string;
 };
 
 /** Gap between the trapezoid and sharktooth inlays and the outer strings. */
@@ -80,6 +82,7 @@ function Fret({
   showNumber,
   inlay,
   stringSpacing,
+  inlayFilter,
 }: FretProps) {
   const middle = (top + bottom) / 2;
   const dotRadius = 5;
@@ -111,6 +114,7 @@ function Fret({
             cy={y}
             r={dotRadius}
             fill="var(--board-inlay)"
+            filter={inlayFilter}
           />
         ))}
       {markerDots > 0 &&
@@ -128,6 +132,7 @@ function Fret({
               stringSpacing,
             )}
             fill="var(--board-inlay)"
+            filter={inlayFilter}
           />
         )}
       {showNumber && (

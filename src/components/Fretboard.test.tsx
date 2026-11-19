@@ -134,6 +134,39 @@ describe("Fretboard", () => {
     expect(blockBottom).toBeLessThan(fifth + 8);
   });
 
+  it.each(["rosewood", "ebony"] as const)(
+    "gives %s inlays a mother-of-pearl finish, in every style",
+    (wood) => {
+      for (const inlay of ["dots", "blocks"] as const) {
+        const { container, unmount } = render(
+          <Fretboard
+            tuning={STANDARD_TUNING}
+            numFrets={12}
+            wood={wood}
+            inlay={inlay}
+          />,
+        );
+        const pearl = container.querySelector('filter[id$="-pearl"]');
+        expect(pearl).not.toBeNull();
+        container
+          .querySelectorAll('[data-part="inlay"]')
+          .forEach((shape) =>
+            expect(shape).toHaveAttribute("filter", `url(#${pearl!.id})`),
+          );
+        unmount();
+      }
+    },
+  );
+
+  it("keeps maple's inlays plain", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} wood="maple" />,
+    );
+    container
+      .querySelectorAll('[data-part="inlay"]')
+      .forEach((shape) => expect(shape).not.toHaveAttribute("filter"));
+  });
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,

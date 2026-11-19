@@ -3,13 +3,14 @@
   Woods look the same in both colour schemes, so none of these change for dark mode.
   - wood-edge / wood-centre: the gradient across the neck
   - grain: colour of the feTurbulence grain layer
-  - hardware: strings, frets, nut and inlay dots
+  - hardware: strings, frets and nut
   - ink: text drawn straight on the wood (e.g. pattern-builder candidate labels)
   - marker-outline: outline on every note marker, so markers keep at least 3:1
     contrast against the wood whatever their fill colour
   - inlay: fret position inlays. Decorative (fret numbers give the position), so no
     contrast minimum, but strings and markers drawn over them get a wood-coloured
-    knockout edge that keeps them at 8:1 or more against the inlay
+    knockout edge that keeps them at 8:1 or more against the inlay. On pearl woods
+    (INLAY_MATERIAL in woods.ts) this is the base colour under the pearl filter
 */
 [data-wood="maple"] {
   --board-wood-edge: #d9b98a;
@@ -28,7 +29,7 @@
   --board-hardware: #d4cfc6;
   --board-ink: #f5efe6;
   --board-marker-outline: #f5efe6;
-  --board-inlay: #efe8dc;
+  --board-inlay: #d8e3ea;
 }
 
 [data-wood="ebony"] {
@@ -38,5 +39,5 @@
   --board-hardware: #bdb7ae;
   --board-ink: #f5efe6;
   --board-marker-outline: #f5efe6;
-  --board-inlay: #efe8dc;
+  --board-inlay: #d8e3ea;
 }

@@ -10,7 +10,7 @@ import {
 } from "../lib/theory";
 import { nextPatternCandidates, type PatternStep } from "../lib/pattern";
 import { DEFAULT_INLAY, type Inlay } from "../lib/inlays";
-import { DEFAULT_WOOD, type Wood } from "../lib/woods";
+import { DEFAULT_WOOD, INLAY_MATERIAL, type Wood } from "../lib/woods";
 import "./Fretboard.css";
 import Fret from "./Fret";
 import NoteMarker from "./NoteMarker";
@@ -137,6 +137,9 @@ function Fretboard({
   const grainId = `${id}-grain`;
   const knockoutId = `${id}-knockout`;
   const knockoutFilter = `url(#${knockoutId})`;
+  const pearlId = `${id}-pearl`;
+  const inlayFilter =
+    INLAY_MATERIAL[wood] === "pearl" ? `url(#${pearlId})` : undefined;
   const boardTop = fretboardTop - BOARD_PADDING;
   const boardHeight = fretboardBottom - fretboardTop + 2 * BOARD_PADDING;
 
@@ -181,6 +184,57 @@ function Fretboard({
             result="grain"
           />
           <feComposite in="grain" in2="SourceGraphic" operator="in" />
+        </filter>
+        {/* Mother of pearl, matched to a photo of real inlays. Real pearl is a cool silvery
+            white whose look comes mostly from soft light and dark bands where the shell
+            catches the light; its colour is only a faint trace of blue, pink and green.
+            So, on top of the inlay's silvery fill:
+            1. Bands: one channel of stretched noise becomes a grey (the matrix spreads it
+               out from mid-grey), added to the fill to lighten or darken it by up to ~11%.
+            2. Iridescence: the noise's independent colour channels add a ~2% tint.
+            Then the result is clipped back to the inlay's shape. The noise is in board
+            coordinates, so each inlay shows a different slice of it, like real cut shell.
+            sRGB interpolation keeps the maths in the same colour space as the measured
+            colours (filters default to linear RGB, which would shift them). */}
+        <filter id={pearlId} colorInterpolationFilters="sRGB">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.015 0.04"
+            numOctaves={2}
+            seed={3}
+            result="noise"
+          />
+          <feColorMatrix
+            in="noise"
+            type="matrix"
+            values="4 0 0 0 -1.5  4 0 0 0 -1.5  4 0 0 0 -1.5  0 0 0 0 1"
+            result="bands"
+          />
+          <feComposite
+            in="SourceGraphic"
+            in2="bands"
+            operator="arithmetic"
+            k2={1}
+            k3={0.22}
+            k4={-0.11}
+            result="banded"
+          />
+          <feColorMatrix
+            in="noise"
+            type="matrix"
+            values="3 0 0 0 -1  0 3 0 0 -1  0 0 3 0 -1  0 0 0 0 1"
+            result="tint"
+          />
+          <feComposite
+            in="banded"
+            in2="tint"
+            operator="arithmetic"
+            k2={1}
+            k3={0.035}
+            k4={-0.0175}
+            result="pearl"
+          />
+          <feComposite in="pearl" in2="SourceGraphic" operator="in" />
         </filter>
         {/* "Knockout" edge: grows the shape's outline by 2px (feMorphology dilate) and fills
             that border with the wood colour, then draws the shape on top. On bare wood the
@@ -269,6 +323,7 @@ function Fretboard({
             showNumber={markerDots > 0}
             inlay={inlay}
             stringSpacing={STRING_SPACING}
+            inlayFilter={inlayFilter}
           />
         );
       })}
