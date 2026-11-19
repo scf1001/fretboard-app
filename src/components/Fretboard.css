@@ -8,8 +8,9 @@
   - marker-outline: outline on every note marker, so markers keep at least 3:1
     contrast against the wood whatever their fill colour
   - inlay: fret position inlays. Decorative (fret numbers give the position), so no
-    contrast minimum, but strings and markers drawn over them get a wood-coloured
-    knockout edge that keeps them at 8:1 or more against the inlay. On pearl woods
+    contrast minimum, but note markers drawn over them get a wood-coloured knockout
+    edge that keeps them at 8:1 or more against the inlay. Strings are decorative
+    and drawn plain. On pearl woods
     (INLAY_MATERIAL in woods.ts) this is the base colour under the pearl filter
 */
 [data-wood="maple"] {

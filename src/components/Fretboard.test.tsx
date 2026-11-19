@@ -52,7 +52,7 @@ describe("Fretboard", () => {
     );
   });
 
-  it("gives strings and note markers the knockout edge, so they stay visible over inlays", () => {
+  it("gives note markers, but not strings, the knockout edge", () => {
     const { container } = render(
       <Fretboard
         tuning={STANDARD_TUNING}
@@ -69,8 +69,8 @@ describe("Fretboard", () => {
       [...container.querySelectorAll(selector)].filter(
         (element) => element.getAttribute("filter") === reference,
       );
-    expect(filtered("line")).toHaveLength(STANDARD_TUNING.length);
     expect(filtered("g")).toHaveLength(5);
+    expect(filtered("line")).toHaveLength(0);
   });
 
   it.each(INLAYS.filter((inlay) => inlay !== "none"))(

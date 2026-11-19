@@ -237,9 +237,9 @@ function Fretboard({
         {/* "Knockout" edge: grows the shape's outline by 2px (feMorphology dilate) and fills
             that border with the wood colour, then draws the shape on top. On bare wood the
             border is invisible; over an inlay it cuts a channel of wood around the shape so
-            it keeps its contrast. userSpaceOnUse makes the filter cover the whole board:
-            the default region is the shape's bounding box, which for a horizontal string
-            has zero height, and the string would vanish. */}
+            it keeps its contrast. Used on note markers only: on the strings the edge
+            looked heavy. userSpaceOnUse makes the filter cover the whole board, so the
+            grown edge is never clipped by the default region (the shape's bounding box). */}
         <filter
           id={knockoutId}
           filterUnits="userSpaceOnUse"
@@ -320,7 +320,6 @@ function Fretboard({
             x1={toX(MARGIN_LEFT)}
             x2={toX(fretboardRight)}
             thickness={thickness}
-            filter={knockoutFilter}
           />
         );
       })}
