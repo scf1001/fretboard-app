@@ -144,7 +144,15 @@ function Fret({
           />
         )}
       {showNumber && (
-        <text x={centerX} y={bottom + 20} textAnchor="middle" fontSize={12}>
+        // Drawn below the wood, on the page background, so it takes the page's text
+        // colour (which switches for dark mode) rather than the SVG default of black.
+        <text
+          x={centerX}
+          y={bottom + 20}
+          textAnchor="middle"
+          fontSize={12}
+          fill="var(--text)"
+        >
           {number}
         </text>
       )}

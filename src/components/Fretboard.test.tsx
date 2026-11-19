@@ -224,6 +224,15 @@ describe("Fretboard", () => {
     },
   );
 
+  it("draws fret numbers in the page's text colour, so they show in dark mode too", () => {
+    const { getByText } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
+    );
+    for (const number of ["3", "5", "7", "9", "12"]) {
+      expect(getByText(number)).toHaveAttribute("fill", "var(--text)");
+    }
+  });
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,
