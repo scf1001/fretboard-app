@@ -2,6 +2,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import Fretboard from "./Fretboard";
 import { STANDARD_TUNING } from "../lib/theory";
+import { INLAYS } from "../lib/inlays";
 import { WOODS } from "../lib/woods";
 
 describe("Fretboard", () => {
@@ -72,15 +73,77 @@ describe("Fretboard", () => {
     expect(filtered("g")).toHaveLength(5);
   });
 
-  it("draws fret inlays in the wood's inlay colour", () => {
+  it.each(INLAYS.filter((inlay) => inlay !== "none"))(
+    "draws %s inlays in the wood's inlay colour",
+    (inlay) => {
+      const { container } = render(
+        <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay={inlay} />,
+      );
+      const inlays = container.querySelectorAll('[data-part="inlay"]');
+      expect(inlays.length).toBeGreaterThan(0);
+      inlays.forEach((shape) =>
+        expect(shape).toHaveAttribute("fill", "var(--board-inlay)"),
+      );
+    },
+  );
+
+  it("draws dot inlays by default", () => {
     const { container } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
     );
-    const inlays = container.querySelectorAll("circle");
-    expect(inlays.length).toBeGreaterThan(0);
-    inlays.forEach((inlay) =>
-      expect(inlay).toHaveAttribute("fill", "var(--board-inlay)"),
+    const inlays = container.querySelectorAll('[data-part="inlay"]');
+    expect(inlays).toHaveLength(4 * 1 + 1 * 2);
+    inlays.forEach((shape) => expect(shape.tagName).toBe("circle"));
+  });
+
+  it.each(["blocks", "trapezoids", "sharktooth"] as const)(
+    "draws one %s inlay on every marked fret, including the 12th",
+    (inlay) => {
+      const { container } = render(
+        <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay={inlay} />,
+      );
+      const inlays = container.querySelectorAll('[data-part="inlay"]');
+      // Marked frets: 3, 5, 7, 9 and 12.
+      expect(inlays).toHaveLength(5);
+      inlays.forEach((shape) => expect(shape.tagName).toBe("polygon"));
+    },
+  );
+
+  it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
+    const { container, getByText } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,
     );
+    expect(container.querySelectorAll('[data-part="inlay"]')).toHaveLength(0);
+    expect(getByText("12")).toBeInTheDocument();
+  });
+
+  it("mirrors the sharktooth in left-handed mode", () => {
+    const pointsOf = (leftHanded: boolean) => {
+      const { container, unmount } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={12}
+          inlay="sharktooth"
+          leftHanded={leftHanded}
+        />,
+      );
+      const width = Number(
+        container.querySelector("svg")!.getAttribute("width"),
+      );
+      const points = container
+        .querySelector('[data-part="inlay"]')!
+        .getAttribute("points")!
+        .split(" ")
+        .map((point) => point.split(",").map(Number));
+      unmount();
+      return { width, points };
+    };
+    const right = pointsOf(false);
+    const left = pointsOf(true);
+    left.points.forEach(([x, y], i) => {
+      expect(x).toBeCloseTo(right.width - right.points[i][0]);
+      expect(y).toBeCloseTo(right.points[i][1]);
+    });
   });
 
   it.each(WOODS)("draws the board in %s when chosen", (wood) => {
