@@ -11,6 +11,13 @@
   --root-marker: #6b21a8;
   /* Solid (not translucent) so the string line underneath doesn't show through the label. */
   --marker-bg: #201b29;
+  /* The fretboard is light maple in both colour schemes, so these aren't redefined for dark mode.
+     Hardware (strings, frets, inlays) and ink (text drawn straight on the wood) are dark for contrast. */
+  --board-wood-edge: #d9b98a;
+  --board-wood-centre: #ecd3a5;
+  --board-grain: #6b4a2b;
+  --board-hardware: #5b5560;
+  --board-ink: #08060d;
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;

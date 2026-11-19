@@ -24,6 +24,16 @@ describe("Fretboard", () => {
     );
   });
 
+  it("draws a wood background with a gradient and a grain layer", () => {
+    const { container } = render(
+      <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
+    );
+    const [gradientRect, grainRect] =
+      container.querySelectorAll('[data-part="wood"]');
+    expect(gradientRect.getAttribute("fill")).toMatch(/^url\(#.+-wood\)$/);
+    expect(grainRect.getAttribute("filter")).toMatch(/^url\(#.+-grain\)$/);
+  });
+
   it("exposes an accessible label describing the fretboard", () => {
     const { getByRole } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
@@ -63,7 +73,10 @@ describe("Fretboard", () => {
     // A appears at (string 1, fret 0) and (string 3, fret 2).
     expect(getAllByText("A")).toHaveLength(2);
     // The root (E) is drawn as a square; the non-root (A) as a circle.
-    expect(container.querySelectorAll("rect")).toHaveLength(3);
+    // (The wood background is also drawn with rects, so leave those out of the count.)
+    expect(
+      container.querySelectorAll('rect:not([data-part="wood"])'),
+    ).toHaveLength(3);
     expect(container.querySelectorAll("circle")).toHaveLength(2);
     // No other note letters should appear.
     expect(container.querySelectorAll("text")).toHaveLength(5);

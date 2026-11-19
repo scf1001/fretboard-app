@@ -53,7 +53,7 @@ function NoteMarker({
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={10}
-        fill={isCandidate ? "var(--text-h)" : "white"}
+        fill={isCandidate ? "var(--board-ink)" : "white"}
       >
         {label}
       </text>

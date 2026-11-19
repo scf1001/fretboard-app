@@ -1,3 +1,4 @@
+import { useId } from "react";
 import {
   findMatchingNote,
   intervalFromRoot,
@@ -22,6 +23,8 @@ const FRET_WIDTH = 50;
 const STRING_SPACING = 28;
 const NUT_WIDTH = 6;
 const OPEN_NOTE_X = 18;
+/** How far the wood extends above the top string and below the bottom one. */
+const BOARD_PADDING = 10;
 
 type FretboardProps = {
   tuning: Tuning;
@@ -119,6 +122,13 @@ function Fretboard({
   // Labels stay upright since only positions are flipped, not the glyphs.
   const toX = (x: number) => (leftHanded ? width - x : x);
 
+  // SVG ids are global to the page, so make them unique per Fretboard instance.
+  const id = useId();
+  const woodId = `${id}-wood`;
+  const grainId = `${id}-grain`;
+  const boardTop = fretboardTop - BOARD_PADDING;
+  const boardHeight = fretboardBottom - fretboardTop + 2 * BOARD_PADDING;
+
   return (
     <svg
       role="img"
@@ -126,7 +136,60 @@ function Fretboard({
       viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
+      style={{ color: "var(--board-hardware)" }}
     >
+      <defs>
+        {/* Darker at the edges, lighter in the middle: reads as a slightly rounded neck. */}
+        <linearGradient id={woodId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--board-wood-edge)" />
+          <stop offset="50%" stopColor="var(--board-wood-centre)" />
+          <stop offset="100%" stopColor="var(--board-wood-edge)" />
+        </linearGradient>
+        {/* Noise stretched along the neck (low x frequency, high y) looks like wood grain.
+            The noise sets only the alpha of a flat grain colour, clipped to the board's shape. */}
+        <filter id={grainId} x="0" y="0" width="100%" height="100%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.004 0.3"
+            numOctaves={3}
+            seed={7}
+            result="noise"
+          />
+          <feColorMatrix
+            in="noise"
+            type="matrix"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 -0.2"
+            result="grainAlpha"
+          />
+          <feFlood floodColor="var(--board-grain)" result="grainColour" />
+          <feComposite
+            in="grainColour"
+            in2="grainAlpha"
+            operator="in"
+            result="grain"
+          />
+          <feComposite in="grain" in2="SourceGraphic" operator="in" />
+        </filter>
+      </defs>
+      {/* Decorative only. Not wrapped in a <g>, so `g` stays a reliable hook for note markers. */}
+      <rect
+        data-part="wood"
+        x={Math.min(toX(MARGIN_LEFT), toX(fretboardRight))}
+        y={boardTop}
+        width={fretboardRight - MARGIN_LEFT}
+        height={boardHeight}
+        fill={`url(#${woodId})`}
+      />
+      <rect
+        data-part="wood"
+        x={Math.min(toX(MARGIN_LEFT), toX(fretboardRight))}
+        y={boardTop}
+        width={fretboardRight - MARGIN_LEFT}
+        height={boardHeight}
+        fill="black"
+        filter={`url(#${grainId})`}
+        opacity={0.35}
+      />
       <line
         x1={toX(MARGIN_LEFT)}
         x2={toX(MARGIN_LEFT)}
