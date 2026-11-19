@@ -289,19 +289,6 @@ function Fretboard({
         stroke="currentColor"
         strokeWidth={NUT_WIDTH}
       />
-      {tuning.map((openNote, stringIndex) => {
-        const thickness = 3.5 - (2.5 * stringIndex) / (numStrings - 1);
-        return (
-          <String
-            key={openNote + stringIndex}
-            y={stringY(stringIndex, numStrings)}
-            x1={toX(MARGIN_LEFT)}
-            x2={toX(fretboardRight)}
-            thickness={thickness}
-            filter={knockoutFilter}
-          />
-        );
-      })}
       {Array.from({ length: numFrets }, (_, i) => i + 1).map((fretNumber) => {
         const wireX = MARGIN_LEFT + FRET_WIDTH * fretNumber;
         const markerDots = markerCount(fretNumber, inlay);
@@ -318,6 +305,22 @@ function Fretboard({
             inlay={inlay}
             stringSpacing={STRING_SPACING}
             inlayFilter={inlayFilter}
+          />
+        );
+      })}
+      {/* SVG has no z-index: later elements are drawn on top. Strings come after the
+          frets so they run over the fret wires and inlays, like on a real guitar, and
+          note markers come last so they sit on the strings. */}
+      {tuning.map((openNote, stringIndex) => {
+        const thickness = 3.5 - (2.5 * stringIndex) / (numStrings - 1);
+        return (
+          <String
+            key={openNote + stringIndex}
+            y={stringY(stringIndex, numStrings)}
+            x1={toX(MARGIN_LEFT)}
+            x2={toX(fretboardRight)}
+            thickness={thickness}
+            filter={knockoutFilter}
           />
         );
       })}

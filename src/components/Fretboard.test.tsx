@@ -264,6 +264,46 @@ describe("Fretboard", () => {
     );
   });
 
+  it.each(INLAYS.filter((inlay) => inlay !== "none"))(
+    "draws strings on top of %s inlays and fret wires, and note markers on top of strings",
+    (inlay) => {
+      const { container } = render(
+        <Fretboard
+          tuning={STANDARD_TUNING}
+          numFrets={12}
+          inlay={inlay}
+          rootNote="A"
+          highlightedNotes={["A"]}
+        />,
+      );
+      const lines = [...container.querySelectorAll("line")];
+      const strings = lines.filter(
+        (line) => line.getAttribute("y1") === line.getAttribute("y2"),
+      );
+      const wires = lines.filter(
+        (line) => line.getAttribute("x1") === line.getAttribute("x2"),
+      );
+      const inlays = [...container.querySelectorAll('[data-part="inlay"]')];
+      const markers = [...container.querySelectorAll("g")];
+      // SVG paints in document order, so "on top" means "later in the markup".
+      const isAfter = (later: Element, earlier: Element) =>
+        Boolean(
+          earlier.compareDocumentPosition(later) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+
+      expect(strings).toHaveLength(STANDARD_TUNING.length);
+      for (const string of strings) {
+        for (const below of [...inlays, ...wires]) {
+          expect(isAfter(string, below)).toBe(true);
+        }
+        for (const marker of markers) {
+          expect(isAfter(marker, string)).toBe(true);
+        }
+      }
+    },
+  );
+
   it("draws no inlays when none is chosen, but keeps the fret numbers", () => {
     const { container, getByText } = render(
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} inlay="none" />,
