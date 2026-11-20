@@ -16,7 +16,7 @@ distinct shape rather than just a colour.
   from the nearest scale tones on the same or an adjacent string
 - Note name or interval labels
 - Standard, Drop D, DADGAD, or custom tunings
-- Left-handed mode
+- Left-handed mode, set once in Settings and remembered between visits
 - A choice of maple, rosewood or ebony fretboard, and of dot, block, trapezoid,
   sharktooth or no fret inlays (mother of pearl on the darker woods), both
   remembered between visits
