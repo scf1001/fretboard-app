@@ -17,14 +17,12 @@ describe("nextPatternCandidates", () => {
     expect(candidates([])).toHaveLength(12);
   });
 
-  it("offers the nearest unused same-string neighbour and the adjacent string within range", () => {
-    expect(candidates([{ stringIndex: 0, fret: 0 }])).toEqual(
-      expect.arrayContaining([
-        { stringIndex: 0, fret: 3 },
-        { stringIndex: 1, fret: 0 },
-      ]),
-    );
-    expect(candidates([{ stringIndex: 0, fret: 0 }])).toHaveLength(2);
+  it("offers the next scale tone, not one further along on the adjacent string", () => {
+    // From E2 the next tone up is G2 (fret 3). A2 on the open A string is in reach, but
+    // it skips G2, so it isn't offered. There's no scale tone below E2 on the neck.
+    expect(candidates([{ stringIndex: 0, fret: 0 }])).toEqual([
+      { stringIndex: 0, fret: 3 },
+    ]);
   });
 
   it("offers both directions on the same string once there's room on both sides", () => {
@@ -48,28 +46,31 @@ describe("nextPatternCandidates", () => {
     ]);
   });
 
-  it("offers only the single nearest scale-tone per adjacent string, even when more than one is in reach", () => {
-    // A2 (string 0 fret 5) -> C3 (string 0 fret 8): the hand spans frets 5–8, so string 1
-    // frets 4–9 are in reach, which holds both D3 (fret 5) and E3 (fret 7). Only one of
-    // them (the nearer in pitch, see the next test) should be offered.
-    const path = [
-      { stringIndex: 0, fret: 5 },
-      { stringIndex: 0, fret: 8 },
-    ];
-    const result = nextPatternCandidates(path, STANDARD_TUNING, 12, [
-      "A",
-      "C",
-      "D",
-      "E",
-      "G",
-    ]);
-    expect(result.filter((step) => step.stringIndex === 1)).toHaveLength(1);
+  it("offers only the scale tones immediately above and below the first note", () => {
+    // A natural minor, starting on A2 (low E string, fret 5): the neighbours are G2
+    // (fret 3) and B2 (fret 7). D3 on the A string (fret 5) is in reach but skips
+    // B2 and C3, so it isn't offered.
+    const A_MINOR = ["A", "B", "C", "D", "E", "F", "G"];
+    const result = nextPatternCandidates(
+      [{ stringIndex: 0, fret: 5 }],
+      STANDARD_TUNING,
+      12,
+      A_MINOR,
+    );
+    expect(result).toHaveLength(2);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { stringIndex: 0, fret: 3 },
+        { stringIndex: 0, fret: 7 },
+      ]),
+    );
   });
 
-  it("picks the pitch-nearest adjacent-string note, not the fret-nearest one", () => {
-    // A2 (string 0 fret 5) -> C3 (string 0 fret 8) ascends. From C3, string 1 has both
-    // D3 (fret 5, 3 frets away but only 2 semitones up) and E3 (fret 7, 1 fret away
-    // but 4 semitones up) within reach — D3 is the closer step and should win.
+  it("offers the next note in every place the hand can play it", () => {
+    // A minor pentatonic, A2 -> C3 on the low E string (frets 5, 8). The next note up,
+    // D3, is both 2 frets along the same string (fret 10) and on the A string at fret 5,
+    // so the user can choose 3 notes on this string or cross over. E3 (A-string fret 7)
+    // is in reach too, but skips D3.
     const path = [
       { stringIndex: 0, fret: 5 },
       { stringIndex: 0, fret: 8 },
@@ -81,8 +82,13 @@ describe("nextPatternCandidates", () => {
       "E",
       "G",
     ]);
-    expect(result).toContainEqual({ stringIndex: 1, fret: 5 });
-    expect(result).not.toContainEqual({ stringIndex: 1, fret: 7 });
+    expect(result).toHaveLength(2);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { stringIndex: 0, fret: 10 },
+        { stringIndex: 1, fret: 5 },
+      ]),
+    );
   });
 
   describe("reach from the hand's position", () => {
