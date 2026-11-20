@@ -13,6 +13,17 @@
     and drawn plain. On pearl woods
     (INLAY_MATERIAL in woods.ts) this is the base colour under the pearl filter
 */
+/*
+  The SVG's width and height attributes give its natural size; the viewBox lets it scale
+  from there. Stretching it to the container's width scales everything (markers, text,
+  strings) together, and height: auto keeps the proportions.
+*/
+.fretboard {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 [data-wood="maple"] {
   --board-wood-edge: #d9b98a;
   --board-wood-centre: #ecd3a5;

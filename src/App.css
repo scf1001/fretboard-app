@@ -7,8 +7,14 @@ main {
   position: relative;
 }
 
+/* The controls box and the fretboard both span main's full width, so their left and
+   right edges line up. */
+main > .controls,
 .fretboard-scroll {
-  max-width: 100%;
+  align-self: stretch;
+}
+
+.fretboard-scroll {
   overflow-x: auto;
 }
 

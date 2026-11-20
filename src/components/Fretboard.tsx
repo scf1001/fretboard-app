@@ -13,17 +13,28 @@ import { DEFAULT_INLAY, markerCount, type Inlay } from "../lib/inlays";
 import { DEFAULT_WOOD, INLAY_MATERIAL, type Wood } from "../lib/woods";
 import "./Fretboard.css";
 import Fret from "./Fret";
-import NoteMarker from "./NoteMarker";
+import NoteMarker, {
+  MARKER_STROKE_WIDTH,
+  ROOT_MARKER_HALF_SIZE,
+} from "./NoteMarker";
 import String from "./String";
 
-const MARGIN_LEFT = 40;
+/** How far the knockout filter grows a note marker's outline. */
+const KNOCKOUT_RADIUS = 2;
+/**
+ * Open-string markers sit just far enough in that the widest one (the root's square,
+ * plus its outline and knockout edge) touches x=0. So the drawing has no empty margin on
+ * the nut side, and the SVG's left edge lines up with the left edge of those markers.
+ */
+const OPEN_NOTE_X =
+  ROOT_MARKER_HALF_SIZE + MARKER_STROKE_WIDTH / 2 + KNOCKOUT_RADIUS;
+const MARGIN_LEFT = 36;
 const MARGIN_TOP = 20;
 /** Room below the bottom string for the fret numbers (see NUMBER_BASELINE in Fret). */
 const MARGIN_BOTTOM = 32;
 const FRET_WIDTH = 50;
 const STRING_SPACING = 28;
 const NUT_WIDTH = 6;
-const OPEN_NOTE_X = 18;
 /** How far the wood extends above the top string and below the bottom one. */
 const BOARD_PADDING = 10;
 
@@ -122,7 +133,8 @@ function Fretboard({
   const fretboardBottom = MARGIN_TOP + STRING_SPACING * (numStrings - 1);
   const fretboardRight = MARGIN_LEFT + FRET_WIDTH * numFrets;
 
-  const width = fretboardRight + MARGIN_LEFT;
+  // No margin past the last fret: the SVG ends where the wood does.
+  const width = fretboardRight;
   const height = fretboardBottom + MARGIN_BOTTOM;
 
   // For left-handed mode, mirror x positions (the nut ends up on the right).
@@ -148,8 +160,11 @@ function Fretboard({
       viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
+      className="fretboard"
       data-wood={wood}
-      style={{ color: "var(--board-hardware)" }}
+      // CSS scales the board up to fill its container (see Fretboard.css); minWidth stops
+      // it shrinking below its natural size, so on phones it scrolls sideways instead.
+      style={{ color: "var(--board-hardware)", minWidth: width }}
     >
       <defs>
         {/* Darker at the edges, lighter in the middle: reads as a slightly rounded neck. */}
@@ -251,7 +266,7 @@ function Fretboard({
           <feMorphology
             in="SourceAlpha"
             operator="dilate"
-            radius={2}
+            radius={KNOCKOUT_RADIUS}
             result="spread"
           />
           <feFlood floodColor="var(--board-wood-centre)" />

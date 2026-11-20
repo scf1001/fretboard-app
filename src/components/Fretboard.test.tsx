@@ -483,8 +483,8 @@ describe("Fretboard", () => {
     const svg = container.querySelector("svg")!;
     const nut = container.querySelector("line")!;
     const width = Number(svg.getAttribute("width"));
-    // The nut, normally at x=40, mirrors to width - 40.
-    expect(nut.getAttribute("x1")).toBe(String(width - 40));
+    // The nut, normally at x=36, mirrors to width - 36.
+    expect(nut.getAttribute("x1")).toBe(String(width - 36));
   });
 
   it("keeps the nut on the left when not left-handed", () => {
@@ -492,7 +492,7 @@ describe("Fretboard", () => {
       <Fretboard tuning={STANDARD_TUNING} numFrets={12} />,
     );
     const nut = container.querySelector("line")!;
-    expect(nut.getAttribute("x1")).toBe("40");
+    expect(nut.getAttribute("x1")).toBe("36");
   });
 
   describe("pattern builder", () => {

@@ -11,6 +11,10 @@ type NoteMarkerProps = {
   filter?: string;
 };
 
+/** Half the width of the root's square, the biggest marker. */
+export const ROOT_MARKER_HALF_SIZE = 11;
+export const MARKER_STROKE_WIDTH = 1.5;
+
 /** A highlighted note on the fretboard. The root is a distinct shape, not just a colour. */
 function NoteMarker({
   x,
@@ -22,7 +26,7 @@ function NoteMarker({
   isCandidate = false,
   filter,
 }: NoteMarkerProps) {
-  const size = isRoot ? 11 : 9;
+  const size = isRoot ? ROOT_MARKER_HALF_SIZE : 9;
 
   return (
     <g
@@ -40,7 +44,7 @@ function NoteMarker({
           rx={2}
           fill={isCandidate ? "var(--board-wood-centre)" : "var(--root-marker)"}
           stroke="var(--board-marker-outline)"
-          strokeWidth={1.5}
+          strokeWidth={MARKER_STROKE_WIDTH}
           strokeDasharray={isCandidate ? "3 2" : undefined}
         />
       ) : (
@@ -50,7 +54,7 @@ function NoteMarker({
           r={size}
           fill={isCandidate ? "var(--board-wood-centre)" : "var(--marker-bg)"}
           stroke="var(--board-marker-outline)"
-          strokeWidth={1.5}
+          strokeWidth={MARKER_STROKE_WIDTH}
           strokeDasharray={isCandidate ? "3 2" : undefined}
         />
       )}
