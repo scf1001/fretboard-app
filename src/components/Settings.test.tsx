@@ -13,6 +13,8 @@ function renderOpen(props: Partial<ComponentProps<typeof Settings>> = {}) {
       onInlayChange={() => {}}
       volume={100}
       onVolumeChange={() => {}}
+      leftHanded={false}
+      onLeftHandedChange={() => {}}
       {...props}
     />,
   );
@@ -29,6 +31,8 @@ describe("Settings", () => {
         onInlayChange={() => {}}
         volume={100}
         onVolumeChange={() => {}}
+        leftHanded={false}
+        onLeftHandedChange={() => {}}
       />,
     );
     // Closed dialogs are hidden from the accessibility tree.
@@ -101,6 +105,20 @@ describe("Settings", () => {
       target: { value: "25" },
     });
     expect(onVolumeChange).toHaveBeenCalledWith(25);
+  });
+
+  it("shows whether left-handed mode is on", () => {
+    renderOpen({ leftHanded: true });
+
+    expect(screen.getByRole("checkbox", { name: "Left-handed" })).toBeChecked();
+  });
+
+  it("reports left-handed mode being switched on", () => {
+    const onLeftHandedChange = vi.fn();
+    renderOpen({ onLeftHandedChange });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Left-handed" }));
+    expect(onLeftHandedChange).toHaveBeenCalledWith(true);
   });
 
   it("closes when Done is pressed", () => {

@@ -23,8 +23,6 @@ type ControlsProps = {
   onCustomStringChange: (stringIndex: number, note: string) => void;
   labelMode: LabelMode;
   onLabelModeChange: (labelMode: LabelMode) => void;
-  leftHanded: boolean;
-  onLeftHandedChange: (leftHanded: boolean) => void;
 };
 
 /** Dropdowns and toggles for choosing a root note, a scale or chord, a tuning, and a label style. */
@@ -41,8 +39,6 @@ function Controls({
   onCustomStringChange,
   labelMode,
   onLabelModeChange,
-  leftHanded,
-  onLeftHandedChange,
 }: ControlsProps) {
   const types = mode === "scale" ? SCALE_TYPES : CHORD_TYPES;
 
@@ -131,15 +127,6 @@ function Controls({
           Intervals
         </label>
       </fieldset>
-
-      <label className="checkbox-label">
-        <input
-          type="checkbox"
-          checked={leftHanded}
-          onChange={(e) => onLeftHandedChange(e.target.checked)}
-        />
-        Left-handed
-      </label>
 
       {tuningPreset === "custom" && (
         <fieldset className="custom-tuning">

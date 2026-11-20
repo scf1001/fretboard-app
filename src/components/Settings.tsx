@@ -11,6 +11,8 @@ type SettingsProps = {
   /** 0–100. */
   volume: number;
   onVolumeChange: (volume: number) => void;
+  leftHanded: boolean;
+  onLeftHandedChange: (leftHanded: boolean) => void;
 };
 
 /** "rosewood" -> "Rosewood". */
@@ -29,6 +31,8 @@ function Settings({
   onInlayChange,
   volume,
   onVolumeChange,
+  leftHanded,
+  onLeftHandedChange,
 }: SettingsProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -92,6 +96,14 @@ function Settings({
           <span className="settings-value" aria-hidden="true">
             {volume}%
           </span>
+        </label>
+        <label className="settings-row">
+          <input
+            type="checkbox"
+            checked={leftHanded}
+            onChange={(event) => onLeftHandedChange(event.target.checked)}
+          />
+          Left-handed
         </label>
         <div className="settings-actions">
           <button type="button" onClick={() => dialogRef.current?.close()}>

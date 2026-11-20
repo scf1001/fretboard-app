@@ -10,12 +10,15 @@ export type Preferences = {
   inlay: Inlay;
   /** How loud notes play, 0–100. */
   volume: number;
+  /** Mirror the fretboard so the nut is on the right. */
+  leftHanded: boolean;
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
   wood: DEFAULT_WOOD,
   inlay: DEFAULT_INLAY,
   volume: 100,
+  leftHanded: false,
 };
 
 const STORAGE_KEY = "fretboard-app:preferences";
@@ -54,11 +57,18 @@ export function loadPreferences(
     }
     // Each field is checked on its own, so one bad or missing value (e.g. preferences
     // saved before inlays existed) doesn't throw away the others.
-    const { wood, inlay, volume } = saved as Record<string, unknown>;
+    const { wood, inlay, volume, leftHanded } = saved as Record<
+      string,
+      unknown
+    >;
     return {
       wood: isWood(wood) ? wood : DEFAULT_PREFERENCES.wood,
       inlay: isInlay(inlay) ? inlay : DEFAULT_PREFERENCES.inlay,
       volume: isVolume(volume) ? volume : DEFAULT_PREFERENCES.volume,
+      leftHanded:
+        typeof leftHanded === "boolean"
+          ? leftHanded
+          : DEFAULT_PREFERENCES.leftHanded,
     };
   } catch {
     return DEFAULT_PREFERENCES;

@@ -18,8 +18,6 @@ function renderControls(overrides = {}) {
     onCustomStringChange: vi.fn(),
     labelMode: "name" as const,
     onLabelModeChange: vi.fn(),
-    leftHanded: false,
-    onLeftHandedChange: vi.fn(),
     ...overrides,
   };
   render(<Controls {...props} />);
@@ -112,14 +110,5 @@ describe("Controls", () => {
     await user.click(screen.getByLabelText("Intervals"));
 
     expect(props.onLabelModeChange).toHaveBeenCalledWith("interval");
-  });
-
-  it("calls onLeftHandedChange when the left-handed checkbox is toggled", async () => {
-    const user = userEvent.setup();
-    const props = renderControls();
-
-    await user.click(screen.getByLabelText("Left-handed"));
-
-    expect(props.onLeftHandedChange).toHaveBeenCalledWith(true);
   });
 });

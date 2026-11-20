@@ -16,7 +16,6 @@ export type AppState = {
   tuningPreset: TuningPreset;
   customTuning: Tuning;
   labelMode: LabelMode;
-  leftHanded: boolean;
 };
 
 function slugify(type: string): string {
@@ -37,9 +36,6 @@ export function stateToSearchParams(state: AppState): URLSearchParams {
     params.set("customTuning", state.customTuning.join(","));
   }
   params.set("labels", state.labelMode);
-  if (state.leftHanded) {
-    params.set("lefty", "1");
-  }
   return params;
 }
 
@@ -91,8 +87,6 @@ export function searchParamsToState(
   if (labels === "name" || labels === "interval") {
     result.labelMode = labels;
   }
-
-  result.leftHanded = params.get("lefty") === "1";
 
   return result;
 }

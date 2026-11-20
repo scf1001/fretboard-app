@@ -27,11 +27,17 @@ describe("loadPreferences", () => {
   });
 
   it("round-trips what savePreferences stored", () => {
-    savePreferences({ wood: "ebony", inlay: "sharktooth", volume: 40 });
+    savePreferences({
+      wood: "ebony",
+      inlay: "sharktooth",
+      volume: 40,
+      leftHanded: true,
+    });
     expect(loadPreferences()).toEqual({
       wood: "ebony",
       inlay: "sharktooth",
       volume: 40,
+      leftHanded: true,
     });
   });
 
@@ -75,7 +81,16 @@ describe("loadPreferences", () => {
         wood: "ebony",
         inlay: "blocks",
         volume: DEFAULT_PREFERENCES.volume,
+        leftHanded: DEFAULT_PREFERENCES.leftHanded,
       });
+    },
+  );
+
+  it.each(["yes", 1, null])(
+    "falls back to right-handed for a non-boolean leftHanded: %s",
+    (leftHanded) => {
+      localStorage.setItem(KEY, JSON.stringify({ leftHanded }));
+      expect(loadPreferences().leftHanded).toBe(false);
     },
   );
 

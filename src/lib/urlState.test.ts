@@ -9,7 +9,6 @@ const baseState = {
   tuningPreset: "standard" as const,
   customTuning: STANDARD_TUNING,
   labelMode: "name" as const,
-  leftHanded: false,
 };
 
 describe("stateToSearchParams", () => {
@@ -39,13 +38,6 @@ describe("stateToSearchParams", () => {
     });
     expect(custom.get("customTuning")).toBe("D2,A2,D3,G3,B3,E4");
   });
-
-  it("omits the left-handed flag when false, includes it when true", () => {
-    expect(stateToSearchParams(baseState).get("lefty")).toBeNull();
-    expect(
-      stateToSearchParams({ ...baseState, leftHanded: true }).get("lefty"),
-    ).toBe("1");
-  });
 });
 
 describe("searchParamsToState", () => {
@@ -54,7 +46,6 @@ describe("searchParamsToState", () => {
       ...baseState,
       tuningPreset: "custom",
       customTuning: ["D2", "A2", "D3", "G3", "B3", "E4"],
-      leftHanded: true,
     });
     expect(searchParamsToState(params)).toEqual({
       root: "A",
@@ -63,7 +54,6 @@ describe("searchParamsToState", () => {
       tuningPreset: "custom",
       customTuning: ["D2", "A2", "D3", "G3", "B3", "E4"],
       labelMode: "name",
-      leftHanded: true,
     });
   });
 
@@ -82,10 +72,6 @@ describe("searchParamsToState", () => {
   it("ignores a custom tuning with the wrong number of strings", () => {
     const params = new URLSearchParams("customTuning=E2,A2,D3");
     expect(searchParamsToState(params).customTuning).toBeUndefined();
-  });
-
-  it("defaults leftHanded to false when absent", () => {
-    expect(searchParamsToState(new URLSearchParams()).leftHanded).toBe(false);
   });
 
   it("returns an empty-ish result for an empty query string", () => {

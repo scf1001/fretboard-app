@@ -41,7 +41,6 @@ function App() {
   const [labelMode, setLabelMode] = useState<LabelMode>(
     initial.labelMode ?? "name",
   );
-  const [leftHanded, setLeftHanded] = useState(initial.leftHanded ?? false);
   const [patternPath, setPatternPath] = useState<PatternStep[] | null>(null);
   // Passing the function itself (not calling it) means it only runs on the first render.
   const [preferences, setPreferences] = useState<Preferences>(loadPreferences);
@@ -68,14 +67,13 @@ function App() {
       tuningPreset,
       customTuning,
       labelMode,
-      leftHanded,
     });
     window.history.replaceState(
       null,
       "",
       `${window.location.pathname}?${params.toString()}`,
     );
-  }, [root, mode, type, tuningPreset, customTuning, labelMode, leftHanded]);
+  }, [root, mode, type, tuningPreset, customTuning, labelMode]);
 
   const tuning =
     tuningPreset === "custom"
@@ -156,6 +154,10 @@ function App() {
             onInlayChange={(inlay) => updatePreferences({ inlay })}
             volume={preferences.volume}
             onVolumeChange={(volume) => updatePreferences({ volume })}
+            leftHanded={preferences.leftHanded}
+            onLeftHandedChange={(leftHanded) =>
+              updatePreferences({ leftHanded })
+            }
           />
         </div>
         <p className="visually-hidden" aria-live="polite">
@@ -174,8 +176,6 @@ function App() {
           onCustomStringChange={handleCustomStringChange}
           labelMode={labelMode}
           onLabelModeChange={setLabelMode}
-          leftHanded={leftHanded}
-          onLeftHandedChange={setLeftHanded}
         />
         <div className="pattern-builder-bar">
           {patternPath === null ? (
@@ -202,7 +202,7 @@ function App() {
             rootNote={root}
             highlightedNotes={notes}
             labelMode={labelMode}
-            leftHanded={leftHanded}
+            leftHanded={preferences.leftHanded}
             wood={preferences.wood}
             inlay={preferences.inlay}
             onNoteClick={playNote}

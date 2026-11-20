@@ -62,19 +62,10 @@
   outline-offset: 2px;
 }
 
-.controls input[type="radio"],
-.controls input[type="checkbox"] {
+.controls input[type="radio"] {
   accent-color: var(--accent);
   width: 15px;
   height: 15px;
-}
-
-.controls .checkbox-label {
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  color: var(--text-h);
 }
 
 .controls .custom-tuning {
