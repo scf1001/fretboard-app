@@ -12,8 +12,9 @@ distinct shape rather than just a colour.
 
 - Highlights the notes of any scale or chord for any root
 - Click or tap a note to hear its pitch, with a volume control in Settings
-- Pattern builder — trace a playable fingering shape one note at a time, choosing
-  from the nearest scale tones on the same or an adjacent string
+- Pattern builder — trace a playable fingering shape one note at a time, stepping
+  to the next scale tone up or down on the same or an adjacent string, then finish
+  it to see just that shape (and edit it again later)
 - Note name or interval labels
 - Standard, Drop D, DADGAD, or custom tunings
 - Left-handed mode, set once in Settings and remembered between visits
