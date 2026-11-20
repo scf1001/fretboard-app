@@ -6,17 +6,27 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import { globalIgnores } from "eslint/config";
 
-export default tseslint.config(globalIgnores(["dist"]), {
-  files: ["**/*.{ts,tsx}"],
-  extends: [
-    js.configs.recommended,
-    tseslint.configs.recommended,
-    reactHooks.configs.flat["recommended-latest"],
-    reactRefresh.configs.vite,
-    eslintConfigPrettier,
-  ],
-  languageOptions: {
-    ecmaVersion: 2020,
-    globals: globals.browser,
+export default tseslint.config(
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat["recommended-latest"],
+      reactRefresh.configs.vite,
+      eslintConfigPrettier,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
   },
-});
+  // Scripts run in Node, not the browser, so they get Node's globals (process, Buffer).
+  {
+    files: ["scripts/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+);

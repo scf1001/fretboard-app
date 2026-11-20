@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "screenshot": "node scripts/screenshot.ts",
     "test": "vitest"
   },
   "dependencies": {

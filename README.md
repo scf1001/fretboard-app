@@ -48,6 +48,7 @@ npm test          # run tests (watch mode)
 npm run lint      # lint
 npm run format    # format with Prettier
 npm run build     # typecheck and build for production
+npm run screenshot # retake docs/screenshot.png (needs Chrome; set CHROME_PATH if it isn't found)
 ```
 
 GitHub Actions runs lint, format checks, tests, and a production build on every
