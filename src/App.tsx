@@ -42,6 +42,9 @@ function App() {
     initial.labelMode ?? "name",
   );
   const [patternPath, setPatternPath] = useState<PatternStep[] | null>(null);
+  // Only meaningful while there's a pattern: true while adding notes, false once it's
+  // finished (just its notes shown). Clearing the pattern (path back to null) ends both.
+  const [patternEditing, setPatternEditing] = useState(true);
   // Passing the function itself (not calling it) means it only runs on the first render.
   const [preferences, setPreferences] = useState<Preferences>(loadPreferences);
 
@@ -134,10 +137,16 @@ function App() {
   const typeLabel =
     (mode === "scale" ? SCALE_TYPES : CHORD_TYPES).find((t) => t.value === type)
       ?.label ?? type;
+  const patternNoteCount =
+    patternPath === null
+      ? ""
+      : `${patternPath.length} note${patternPath.length === 1 ? "" : "s"}`;
   const patternStatus =
     patternPath === null
       ? ""
-      : ` Building a pattern: ${patternPath.length} note${patternPath.length === 1 ? "" : "s"} placed.`;
+      : patternEditing
+        ? ` Building a pattern: ${patternNoteCount} placed.`
+        : ` Finished pattern: ${patternNoteCount}.`;
   const announcement = `Showing ${root} ${typeLabel} ${mode}, ${TUNING_PRESETS.find((p) => p.value === tuningPreset)?.label} tuning.${patternStatus}`;
 
   return (
@@ -179,7 +188,13 @@ function App() {
         />
         <div className="pattern-builder-bar">
           {patternPath === null ? (
-            <button type="button" onClick={() => setPatternPath([])}>
+            <button
+              type="button"
+              onClick={() => {
+                setPatternPath([]);
+                setPatternEditing(true);
+              }}
+            >
               Build a pattern
             </button>
           ) : (
@@ -187,11 +202,27 @@ function App() {
               <button type="button" onClick={() => setPatternPath(null)}>
                 Clear pattern
               </button>
-              <span className="pattern-builder-hint">
-                {patternPath.length === 0
-                  ? "Click a note to start your pattern."
-                  : "Click a dashed note to continue, or a placed note to remove it and everything after."}
-              </span>
+              {patternEditing ? (
+                <>
+                  {/* Nothing to show until at least one note is placed. */}
+                  <button
+                    type="button"
+                    disabled={patternPath.length === 0}
+                    onClick={() => setPatternEditing(false)}
+                  >
+                    Finish pattern
+                  </button>
+                  <span className="pattern-builder-hint">
+                    {patternPath.length === 0
+                      ? "Click a note to start your pattern."
+                      : "Click a dashed note to continue, or a placed note to remove it and everything after."}
+                  </span>
+                </>
+              ) : (
+                <button type="button" onClick={() => setPatternEditing(true)}>
+                  Edit pattern
+                </button>
+              )}
             </>
           )}
         </div>
@@ -207,6 +238,7 @@ function App() {
             inlay={preferences.inlay}
             onNoteClick={playNote}
             patternPath={patternPath}
+            patternFinished={!patternEditing}
             onPatternStepAdd={handlePatternStepAdd}
             onPatternStepRemoveFrom={handlePatternStepRemoveFrom}
           />

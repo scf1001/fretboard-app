@@ -52,6 +52,8 @@ type FretboardProps = {
   onNoteClick?: (pitch: string) => void;
   /** While building a pattern: the notes placed so far. `null` means the builder is off. */
   patternPath?: PatternStep[] | null;
+  /** The pattern is done: show just its notes, with no candidates, and play them on click. */
+  patternFinished?: boolean;
   onPatternStepAdd?: (step: PatternStep) => void;
   onPatternStepRemoveFrom?: (step: PatternStep) => void;
 };
@@ -81,13 +83,15 @@ function describeHighlights(
 
 type MarkerSpec = PatternStep & { isCandidate: boolean };
 
-/** Which positions to render as markers: every highlighted note normally, or the
- * pattern-in-progress (placed notes plus the next clickable candidates) when building. */
+/** Which positions to render as markers: every highlighted note normally, the
+ * pattern-in-progress (placed notes plus the next clickable candidates) when building,
+ * or just the placed notes once the pattern is finished. */
 function markersToRender(
   tuning: Tuning,
   numFrets: number,
   highlightedNotes: string[],
   patternPath: PatternStep[] | null | undefined,
+  patternFinished: boolean,
 ): MarkerSpec[] {
   if (!patternPath) {
     const markers: MarkerSpec[] = [];
@@ -104,6 +108,7 @@ function markersToRender(
   }
 
   const placed = patternPath.map((step) => ({ ...step, isCandidate: false }));
+  if (patternFinished) return placed;
   const candidates = nextPatternCandidates(
     patternPath,
     tuning,
@@ -125,6 +130,7 @@ function Fretboard({
   inlay = DEFAULT_INLAY,
   onNoteClick,
   patternPath = null,
+  patternFinished = false,
   onPatternStepAdd,
   onPatternStepRemoveFrom,
 }: FretboardProps) {
@@ -338,44 +344,47 @@ function Fretboard({
           />
         );
       })}
-      {markersToRender(tuning, numFrets, highlightedNotes, patternPath).map(
-        ({ stringIndex, fret, isCandidate }) => {
-          const matched = findMatchingNote(
-            noteAt(stringIndex, fret, tuning),
-            highlightedNotes,
-          );
-          if (!matched) return null;
-          const interval =
-            rootNote !== undefined
-              ? intervalFromRoot(rootNote, matched)
-              : undefined;
-          const label =
-            labelMode === "interval" && interval ? interval : matched;
-          return (
-            <NoteMarker
-              key={`${stringIndex}-${fret}`}
-              x={toX(fretCenterX(fret))}
-              y={stringY(stringIndex, numStrings)}
-              label={label}
-              isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
-              tooltip={interval ? `${matched} (${interval})` : matched}
-              isCandidate={isCandidate}
-              filter={knockoutFilter}
-              onClick={() => {
-                if (patternPath) {
-                  if (isCandidate) {
-                    onPatternStepAdd?.({ stringIndex, fret });
-                  } else {
-                    onPatternStepRemoveFrom?.({ stringIndex, fret });
-                  }
+      {markersToRender(
+        tuning,
+        numFrets,
+        highlightedNotes,
+        patternPath,
+        patternFinished,
+      ).map(({ stringIndex, fret, isCandidate }) => {
+        const matched = findMatchingNote(
+          noteAt(stringIndex, fret, tuning),
+          highlightedNotes,
+        );
+        if (!matched) return null;
+        const interval =
+          rootNote !== undefined
+            ? intervalFromRoot(rootNote, matched)
+            : undefined;
+        const label = labelMode === "interval" && interval ? interval : matched;
+        return (
+          <NoteMarker
+            key={`${stringIndex}-${fret}`}
+            x={toX(fretCenterX(fret))}
+            y={stringY(stringIndex, numStrings)}
+            label={label}
+            isRoot={rootNote !== undefined && sameNote(matched, rootNote)}
+            tooltip={interval ? `${matched} (${interval})` : matched}
+            isCandidate={isCandidate}
+            filter={knockoutFilter}
+            onClick={() => {
+              if (patternPath && !patternFinished) {
+                if (isCandidate) {
+                  onPatternStepAdd?.({ stringIndex, fret });
                 } else {
-                  onNoteClick?.(pitchAt(stringIndex, fret, tuning));
+                  onPatternStepRemoveFrom?.({ stringIndex, fret });
                 }
-              }}
-            />
-          );
-        },
-      )}
+              } else {
+                onNoteClick?.(pitchAt(stringIndex, fret, tuning));
+              }
+            }}
+          />
+        );
+      })}
     </svg>
   );
 }

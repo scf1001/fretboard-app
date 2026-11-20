@@ -36,8 +36,13 @@ main > .controls,
   cursor: pointer;
 }
 
-.pattern-builder-bar button:hover {
+.pattern-builder-bar button:hover:not(:disabled) {
   background: var(--root-marker);
+}
+
+.pattern-builder-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pattern-builder-hint {

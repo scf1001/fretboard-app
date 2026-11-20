@@ -580,5 +580,49 @@ describe("Fretboard", () => {
       });
       expect(onNoteClick).not.toHaveBeenCalled();
     });
+
+    describe("once finished", () => {
+      const path = [
+        { stringIndex: 0, fret: 0 },
+        { stringIndex: 1, fret: 0 },
+      ];
+
+      it("shows only the placed notes, with no candidates", () => {
+        const { container } = render(
+          <Fretboard
+            tuning={STANDARD_TUNING}
+            numFrets={2}
+            rootNote="E"
+            highlightedNotes={["E", "A"]}
+            patternPath={path}
+            patternFinished
+          />,
+        );
+        expect(container.querySelectorAll("g")).toHaveLength(2);
+        expect(container.querySelectorAll("[stroke-dasharray]")).toHaveLength(
+          0,
+        );
+      });
+
+      it("plays a note when it's clicked, rather than editing the pattern", () => {
+        const onPatternStepRemoveFrom = vi.fn();
+        const onNoteClick = vi.fn();
+        const { container } = render(
+          <Fretboard
+            tuning={STANDARD_TUNING}
+            numFrets={2}
+            rootNote="E"
+            highlightedNotes={["E", "A"]}
+            patternPath={path}
+            patternFinished
+            onPatternStepRemoveFrom={onPatternStepRemoveFrom}
+            onNoteClick={onNoteClick}
+          />,
+        );
+        fireEvent.click(container.querySelector("g")!);
+        expect(onNoteClick).toHaveBeenCalledWith("E2");
+        expect(onPatternStepRemoveFrom).not.toHaveBeenCalled();
+      });
+    });
   });
 });
